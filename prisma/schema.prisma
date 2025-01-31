@@ -1,0 +1,280 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id             Int                 @id @default(autoincrement())
+  name           String
+  height         Float
+  weight         Float
+  equipments     user_equipment[]
+  progress       progress[]
+  workouts       workoutperweek[]
+  availabilities user_availability[]
+}
+
+model user_availability {
+  id      Int    @id @default(autoincrement())
+  user_id Int
+  day     String
+  minutes Int
+  user    user   @relation(fields: [user_id], references: [id])
+}
+
+model progress {
+  id          Int     @id @default(autoincrement())
+  user_id     Int
+  workout_id  Int
+  reps        Int
+  weight_used Float?
+  level_done  Int?
+  user        user    @relation(fields: [user_id], references: [id])
+  workout     workout @relation(fields: [workout_id], references: [id])
+}
+
+model workoutperweek {
+  id       Int                        @id @default(autoincrement())
+  user_id  Int
+  workouts workout_per_week_workout[]
+  user     user                       @relation(fields: [user_id], references: [id])
+}
+
+model workout {
+  id        Int                        @id @default(autoincrement())
+  exercises workout_exercise[]
+  progress  progress[]
+  perWeek   workout_per_week_workout[]
+}
+
+model workout_exercise {
+  id          Int      @id @default(autoincrement())
+  workout_id  Int
+  exercise_id Int
+  workout     workout  @relation(fields: [workout_id], references: [id])
+  exercise    exercise @relation(fields: [exercise_id], references: [id])
+}
+
+model exercise {
+  id          Int                  @id @default(autoincrement())
+  exercise_cd String
+  level       Int?
+  name        String
+  intensity   String
+  duration    Int
+  types       String?
+  muscles     exercise_muscle[]
+  equipments  exercise_equipment[]
+  workouts    workout_exercise[]
+}
+
+model exercise_muscle {
+  id          Int      @id @default(autoincrement())
+  exercise_id Int
+  muscle_id   Int
+  exercise    exercise @relation(fields: [exercise_id], references: [id])
+  muscle      muscle   @relation(fields: [muscle_id], references: [id])
+  rating      Int
+}
+
+model muscle {
+  id        Int               @id @default(autoincrement())
+  name      String
+  exercises exercise_muscle[]
+}
+
+model equipment {
+  id        Int                  @id @default(autoincrement())
+  name      String
+  exercises exercise_equipment[]
+  users     user_equipment[]
+}
+
+model exercise_equipment {
+  id           Int       @id @default(autoincrement())
+  exercise_id  Int
+  equipment_id Int
+  exercise     exercise  @relation(fields: [exercise_id], references: [id])
+  equipment    equipment @relation(fields: [equipment_id], references: [id])
+}
+
+model user_equipment {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  equipment_id Int
+  user         user      @relation(fields: [user_id], references: [id])
+  equipment    equipment @relation(fields: [equipment_id], references: [id])
+}
+
+model workout_per_week_workout {
+  id                Int            @id @default(autoincrement())
+  workout_id        Int
+  workoutperweek_id Int
+  workout           workout        @relation(fields: [workout_id], references: [id])
+  workoutperweek    workoutperweek @relation(fields: [workoutperweek_id], references: [id])
+}
+
+/**
+ * revision for this table, store in memory
+ * model exercise_muscle {
+ * id          Int      @id @default(autoincrement())
+ * exercise_id Int
+ * muscle_id   Int
+ * exercise    exercise @relation(fields: [exercise_id], references: [id])
+ * muscle      muscle   @relation(fields: [muscle_id], references: [id])
+ * rating  Int
+ * }
+ * I want to make the backend with nestjs that fulfill this requirements
+ * 1. create a new user which they'll enter all the required fields
+ * 2. based on the user input, create a new workout plan with these requirements
+ * a. the workout should hit each muscle as similar amount of number of times points as possible (points is calculated from number of sets of an excersise * rating in the excersise_muscle table)
+ * b. the number of workout days will be based on the user's availability
+ * c. the excersise table have duration column and intensity column which can either be 'low', 'medium', 'high', 'very high', each require 1 minutes, 2,4 and 6 minutes of rest each after they're performed
+ * d. the excersise picked for the workout should only be the one which the user have access to the equipment
+ * e. the workout plan should aim to reach the highest total points possible from every muscle combined (again, points is calculated from number of sets of an excersise * rating in the excersise_muscle table) in the amount of times the user is availabe (for example if a user only have 5 minutes on a single day, they won't be able to do very high excersise)
+ * f. an excersise can't be perform for more than 3 sets per workout
+ * what method will be best to achieve this? (can use anything and everything), give the best possible method and the complete code of the workout generation
+ * example of the contents of the excersise table
+ * /**
+ * equipment :
+ * 1. dip bar
+ * 2. light dumbell (5-20kg)
+ * 3. medium dumbell (20-50kg)
+ * 4. heavy dumbell (50-100kg)
+ * 5. barbell (100kg - 200kg)
+ * 6. heavy barbell (> 200kg)
+ * 7. bar
+ * 8. rope, straps
+ * 9. pull up bar
+ * 10. dip bar
+ * 11. squat rack
+ * 12. bench
+ * muscle :
+ * 1. lats
+ * 2. chest
+ * 3. side delts
+ * 4. mid back
+ * 5. biceps
+ * 6. triceps
+ * 7. quads
+ * 8. hamstring
+ * excersise :
+ * 1. Pull up
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * level : 1
+ * 1. high one hand Pull up
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * level : 2
+ * 1. low one hand Pull up
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * level : 3
+ * 1. one arm Pull up
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * level : 4
+ * 2. Push up :
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * level : 1
+ * 2. high one arm Push up :
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * level : 2
+ * 2. low one arm Push up :
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * level : 3
+ * 2. one arm Push up :
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * level : 4
+ * 3. Side lateral raise :
+ * equipment : light dumbell
+ * muscle hit : side delt (10)
+ * exercise_cd : 'LR'
+ * type : 'weight'
+ * 4. dumbell bicep curl :
+ * equipment : light dumbell or medium dumbell
+ * muscle hit : bicep (7)
+ * exercise_cd : 'DBC'
+ * type : 'weight'
+ * 5. bodyweight tricep extension
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * 6. reverse lunge
+ * equipment : medium dumbell
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * 7. barbell squat
+ * equipment : barbell, squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * 8. deadlift
+ * equipment : barbell or heavy barbell
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * 9. bodyweight row
+ * equipment : dip bar
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * exercise_cd : 'BR'
+ * type : 'bodyweight'
+ * level : 1
+ * 9. bodyweight archer row
+ * equipment : dip bar
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * exercise_cd : 'BR'
+ * type : 'bodyweight'
+ * level : 2
+ * 9. one arm bodyweight row
+ * equipment : dip bar
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * exercise_cd : 'BR'
+ * type : 'bodyweight'
+ * level : 3
+ * 10.barbell row
+ * equipment : barbell
+ * exercise_cd : 'BBR'
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * type : 'weight'
+ * 11. dips
+ * equipment : dip bar
+ * muscle hit : triceps (6), chest (7)
+ * exercise_cd : 'BD'
+ * type : 'bodyweight'
+ * level : 1
+ */
