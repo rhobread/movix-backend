@@ -1,8 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as session from 'express-session';
+import * as passport from 'passport';
+import { config } from 'dotenv';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // Set up sessions. In production, use a more secure store!
+  app.use(
+    session({
+      secret: 'your-session-secret', // Replace with a secure secret
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+
+  // Initialize Passport and use sessions
+  app.use(passport.initialize());
+  app.use(passport.session());
   await app.listen(process.env.PORT ?? 3005);
 }
 bootstrap();
