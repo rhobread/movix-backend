@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 
-@Controller('user')
+@Controller('workout')
 export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) { }
 
@@ -38,6 +38,10 @@ export class WorkoutController {
   @Post('generate-plan/:user_id')
   async generatePlan(@Param('user_id') user_id: string) {
     return await this.workoutService.generateWorkoutPlanForUser(+user_id)
+  }
+  @Post('generate/:user_id')
+  async generateWorkout(@Param('user_id') user_id: string) {
+    return await this.workoutService.makeWorkoutPlanForUser(+user_id)
   }
 
   @Post('create')

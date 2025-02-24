@@ -6,7 +6,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // 1. Create a new user (input: email, name, password)
-  @Post('create')
+  @Post('register')
   async createUser(
     @Body() body: { email: string; name: string; password: string },
   ) {

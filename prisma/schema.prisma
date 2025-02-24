@@ -115,6 +115,8 @@ model user_group_level {
   level    Int?
   user     users @relation(fields: [user_id], references: [id])
   group    group @relation(fields: [group_id], references: [id])
+
+  @@unique([user_id, group_id])
 }
 
 model excercise_group {
