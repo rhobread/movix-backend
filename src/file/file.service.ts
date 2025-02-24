@@ -29,8 +29,8 @@ export class FileService {
             return response.data;
         } catch (error) {
             // In production, improve error handling.
-            console.error('Error uploading file to OneDrive:', error.response?.data || error.message);
-            throw error;
+            console.error('Error uploading file to OneDrive:' + error);
+            return error;
         }
     }
 }

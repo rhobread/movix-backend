@@ -16,12 +16,15 @@ datasource db {
 model users {
   id               Int                 @id @default(autoincrement())
   name             String
-  height           Float
-  weight           Float
+  email            String
+  password         String
+  height           Float?
+  weight           Float?
   equipments       user_equipment[]
   workouts         workoutperweek[]
   availabilities   user_availability[]
   workout_progress workout_progress[]
+  level            user_group_level[]
 }
 
 model user_availability {
@@ -95,6 +98,32 @@ model exercise {
   muscles     exercise_muscle[]
   equipments  exercise_equipment[]
   workouts    workout_exercise[]
+  group       excercise_group[]
+}
+
+model group {
+  id        Int                @id @default(autoincrement())
+  name      String
+  exercises excercise_group[]
+  user      user_group_level[]
+}
+
+model user_group_level {
+  id       Int   @id @default(autoincrement())
+  user_id  Int
+  group_id Int
+  level    Int?
+  user     users @relation(fields: [user_id], references: [id])
+  group    group @relation(fields: [group_id], references: [id])
+}
+
+model excercise_group {
+  id           Int      @id @default(autoincrement())
+  excercise_id Int
+  group_id     Int
+  difficulty   Int?
+  exercise     exercise @relation(fields: [excercise_id], references: [id])
+  group        group    @relation(fields: [group_id], references: [id])
 }
 
 model exercise_muscle {
@@ -165,6 +194,15 @@ model workout_per_week_workout {
  * what method will be best to achieve this? (can use anything and everything), give the best possible method and the complete code of the workout generation
  * example of the contents of the excersise table
  * /**
+ * group :
+ * 1. leg push
+ * 2. leg pull
+ * 3. vertical pull
+ * 4. horizontal push
+ * 5. horizontal pull
+ * 6. side delt
+ * 7. bicep
+ * 8. tricep
  * equipment :
  * 1. dip bar
  * 2. light dumbell (5-20kg)
@@ -187,54 +225,79 @@ model workout_per_week_workout {
  * 6. triceps
  * 7. quads
  * 8. hamstring
+ * group:
+ * 1. leg push
+ * 2. leg pull
+ * 3. vertical pull
+ * 4. horizontal push
+ * 5. horizontal pull
+ * 6. side delt
+ * 7. bicep
+ * 8. tricep
  * excersise :
  * 1. Pull up
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
+ * group : 'vertical pull'
+ * difficulty : 5
  * level : 1
  * 1. high one hand Pull up
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
+ * group : 'vertical pull'
+ * difficulty : 6
  * level : 2
  * 1. low one hand Pull up
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
+ * group : 'vertical pull'
+ * difficulty : 7
  * level : 3
  * 1. one arm Pull up
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
+ * group : 'vertical pull'
+ * difficulty : 9
  * level : 4
  * 2. Push up :
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
  * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 3
  * level : 1
  * 2. high one arm Push up :
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
  * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 5
  * level : 2
  * 2. low one arm Push up :
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
  * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 6
  * level : 3
  * 2. one arm Push up :
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
  * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 7
  * level : 4
  * 3. Side lateral raise :
  * equipment : light dumbell
