@@ -35,7 +35,7 @@ export class UserService {
     return user;
   }
 
-  // 2. Update user's height and weight
+
   async updateUserMeasurements(userId: number, measurements: { height: number; weight: number }): Promise<any> {
     const updatedUser = await this.prisma.users.update({
       where: { id: userId },
@@ -46,6 +46,46 @@ export class UserService {
     });
     return updatedUser;
   }
+
+  // 2. Update user's height and weight
+  async insertUserMeasurements(
+    userId: number,
+    measurements: { height: number; weight: number }
+  ): Promise<any> {
+    // Update user's height and weight.
+    const updatedUser = await this.prisma.users.update({
+      where: { id: userId },
+      data: {
+        height: measurements.height,
+        weight: measurements.weight,
+      },
+    });
+  
+    // Calculate BMI: weight (kg) divided by height (m) squared.
+    const bmi = measurements.weight / (measurements.height * measurements.height);
+  
+    // Determine the new level based on BMI.
+    let newLevel: number;
+    if (bmi >= 35 && bmi <= 40) newLevel = 1;
+    else if (bmi >= 30 && bmi < 35) newLevel = 2;
+    else if (bmi >= 25 && bmi < 30) newLevel = 3;
+    else if (bmi < 18.5) newLevel = 3;
+    else if (bmi >= 18.5 && bmi < 25) newLevel = 4;
+    else newLevel = 1; // fallback if BMI doesn't match any category
+  
+    // Update (or create) the user's group levels for all 8 groups.
+    // Ensure your user_group_level model has a composite unique constraint on (user_id, group_id).
+    for (let groupId = 1; groupId <= 8; groupId++) {
+      await this.prisma.user_group_level.upsert({
+        where: { user_id_group_id: { user_id: userId, group_id: groupId } },
+        update: { level: newLevel },
+        create: { user_id: userId, group_id: groupId, level: newLevel },
+      });
+    }
+  
+    return updatedUser;
+  }
+  
 
   // 3. Add equipments to a user (input: array of equipment IDs)
   async addUserEquipments(userId: number, equipmentIds: number[]): Promise<any> {

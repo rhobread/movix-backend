@@ -24,7 +24,7 @@ export class UserController {
     @Param('id') id: string,
     @Body() body: { height: number; weight: number },
   ) {
-    const updatedUser = await this.userService.updateUserMeasurements(
+    const updatedUser = await this.userService.insertUserMeasurements(
       +id,
       body,
     );
