@@ -53,7 +53,7 @@ export class UserService {
     measurements: { height: number; weight: number }
   ): Promise<any> {
     // Update user's height and weight.
-    const updatedUser = await this.prisma.users.update({
+    const updatedUser = await this.prisma.users.updateManyAndReturn({
       where: { id: userId },
       data: {
         height: measurements.height,
