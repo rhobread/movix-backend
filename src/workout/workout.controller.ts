@@ -10,6 +10,11 @@ export class WorkoutController {
     return await this.workoutService.getAllUser()
   }
 
+  @Get('equipments')
+  async getAllEquipments() {
+    return await this.workoutService.getAllEquipments()
+  }
+
   @Get('workout-plan/:user_id')
   async getWorkoutPlan(@Param('user_id') user_id: string) {
     return await this.workoutService.getWorkoutPlan(+user_id)
