@@ -68,6 +68,19 @@ export class WorkoutService {
     // }
 
 
+    async getAllEquipments(){
+        try {
+            const result = await this.databaseService.equipment.findMany()
+            return {
+                statusCode: 200,
+                message: 'All equipment get',
+                data: result,
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
 
     async generateWorkoutPlanForUser(userId: number) {
         // 1. Fetch the user with their equipments and availabilities.
