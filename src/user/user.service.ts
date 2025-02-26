@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 
 
@@ -141,5 +141,57 @@ export class UserService {
       results.push(updated);
     }
     return results;
+  }
+
+  async getUserEquipment(user_id:number){
+    try {
+      const equipments = await this.prisma.user_equipment.findMany({
+        where: {
+          user_id: user_id
+        },
+        include : {
+          equipment: true
+        }
+      })
+      if (!equipments || equipments.length < 1){
+        throw new NotFoundException({
+          statusCode:404,
+          message : "either user don't have any equipments or user doesn't exist",
+          data :[]
+        })
+      }
+      return {
+        statusCode:200,
+        message : "get user's equipment success",
+        data: equipments
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getUserAvailability(user_id:number){
+    try {
+      const result = await this.prisma.user_availability.findMany({
+        where:{
+          user_id:user_id
+        },
+        
+      })
+      if (!result || result.length < 1){
+        throw new NotFoundException({
+          statusCode:404,
+          message : "either user is never available or user doesn't exist",
+          data :[]
+        })
+      }
+      return {
+        statusCode:200,
+        message : "get user's availability success",
+        data: result
+      }
+    } catch (error) {
+      throw error
+    }
   }
 }

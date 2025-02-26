@@ -306,71 +306,90 @@ model workout_per_week_workout {
  * muscle hit : side delt (10)
  * exercise_cd : 'LR'
  * type : 'weight'
+ * group : 'side delt'
  * 4. dumbell bicep curl :
  * equipment : light dumbell or medium dumbell
  * muscle hit : bicep (7)
  * exercise_cd : 'DBC'
  * type : 'weight'
+ * group : 'bicep'
  * 5. bodyweight tricep extension
  * equipment : dip bar
  * muscle hit : tricep (7)
  * exercise_cd : 'BTC'
  * type : 'bodyweight'
  * level : 1
+ * group : 'tricep'
+ * difficulty : 4
  * 6. reverse lunge
  * equipment : medium dumbell
  * muscle hit : quads (10)
  * exercise_cd : 'LRL'
  * type : 'weight'
+ * group : 'leg push'
  * 7. barbell squat
  * equipment : barbell, squat rack
  * muscle hit : quads (10)
  * exercise_cd : 'LBS'
  * type : 'weight'
+ * group : 'leg push'
  * 8. deadlift
  * equipment : barbell or heavy barbell
  * muscle hit : quads (8), hamstring (6), mid back (3)
  * exercise_cd : 'LD'
  * type : 'weight'
+ * group : 'leg push'
  * 9. bodyweight row
  * equipment : dip bar
  * muscle hit : mid back (8), lats (5), biceps (4)
  * exercise_cd : 'BR'
  * type : 'bodyweight'
  * level : 1
+ * group : 'horizontal pull'
+ * difficulty : 2
  * 9. bodyweight archer row
  * equipment : dip bar
  * muscle hit : mid back (8), lats (5), biceps (4)
  * exercise_cd : 'BR'
  * type : 'bodyweight'
+ * group : 'horizontal pull'
+ * difficulty : 4
  * level : 2
  * 9. one arm bodyweight row
  * equipment : dip bar
  * muscle hit : mid back (8), lats (5), biceps (4)
  * exercise_cd : 'BR'
  * type : 'bodyweight'
+ * group : 'horizontal pull'
+ * difficulty : 2
  * level : 3
  * 10.barbell row
  * equipment : barbell
  * exercise_cd : 'BBR'
  * muscle hit : mid back (8), lats (5), biceps (4)
  * type : 'weight'
+ * group : 'horizontal pull'
  * 11. dips
  * equipment : dip bar
  * muscle hit : triceps (6), chest (7)
  * exercise_cd : 'BD'
  * type : 'bodyweight'
  * level : 1
+ * group : 'horizontal push'
+ * difficulty : 4
  * 12. dumbell pullover
  * equipment : dumbell, bench
  * muscle hit : lats (7),
  * exercise_cd : 'DPL'
  * type : 'weight'
+ * group : 'vertical pull'
  * 13. tuck front lever
  * equipment : pull up bar
  * muscle hit : lats (8)
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
+ * group : 'vertical pull'
+ * difficulty : 4
  * level : 1
  * 13. half tuck front lever
  * equipment : pull up bar
@@ -378,30 +397,62 @@ model workout_per_week_workout {
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 2
+ * group : 'vertical pull'
+ * difficulty : 6
  * 13. full front lever
  * equipment : pull up bar
  * muscle hit : lats (8)
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 3
+ * group : 'vertical pull'
+ * difficulty : 7
  * 14. static tuck front lever
  * equipment : dip bar
  * muscle hit : lats (8)
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 1
+ * group : 'vertical pull'
+ * difficulty : 4
  * 14. static half tuck front lever
  * equipment : dip bar
  * muscle hit : lats (8)
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 2
+ * group : 'vertical pull'
+ * difficulty : 5
  * 14. static full front lever
  * equipment : dip bar
  * muscle hit : lats (8)
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 3
+ * group : 'vertical pull'
+ * difficulty : 7
+ * 15. isometric deadlift
+ * equipment : dip bar
+ * muscle hit : quads (7), hamstring (5), mid back (3)
+ * exercise_cd : 'IDL'
+ * type : 'isometric'
+ * group : 'leg push'
+ * 16. bodyweight bicep curl
+ * equipment : dip bar
+ * muscle hit : biceps (7)
+ * exercise_cd : 'BBC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'bicep'
+ * difficulty : 4
+ * 16. bodyweight bicep curl
+ * equipment : dip bar
+ * muscle hit : biceps (7)
+ * exercise_cd : 'BBC'
+ * type : 'bodyweight'
+ * level : 2
+ * group : 'bicep'
+ * difficulty : 6
  */
 
 // make a function that'll take the user's id, then take in their equipments, days_available and minutes_available then generate a workout plan with these requirements :

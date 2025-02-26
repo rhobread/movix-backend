@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -76,5 +76,14 @@ export class UserController {
       message: 'Availabilities updated successfully',
       data: result,
     };
+  }
+
+  @Get('equipments/:id')
+  async getEquipmentByUser(@Param('id') id:string){
+    return await this.userService.getUserEquipment(+id)
+  }
+  @Get('availability/:id')
+  async getUserAvailability(@Param('id') id:string){
+    return await this.userService.getUserAvailability(+id)
   }
 }
