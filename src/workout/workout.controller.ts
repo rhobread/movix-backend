@@ -70,6 +70,15 @@ export class WorkoutController {
     };
   }
 
+  @Get('today/:userId')
+  async getWorkoutForToday(@Param('userId') userId: string) {
+    const workout = await this.workoutService.getWorkoutForToday(+userId);
+    return {
+      statusCode: 200,
+      message: 'Workout for today retrieved successfully',
+      data: workout,
+    };
+  }
 
   @Put('equipment/edit')
   async editEquipmentAvailabilities(
