@@ -19,12 +19,27 @@ export class UserController {
   }
 
   // 2. Update user's height and weight
+  @Post('measurements/:id')
+  async insertMeasurements(
+    @Param('id') id: string,
+    @Body() body: { height: number; weight: number },
+  ) {
+    const updatedUser = await this.userService.insertUserMeasurements(
+      +id,
+      body,
+    );
+    return {
+      statusCode: 200,
+      message: 'Measurements inserted successfully',
+      data: updatedUser,
+    };
+  }
   @Put('measurements/:id')
   async updateMeasurements(
     @Param('id') id: string,
     @Body() body: { height: number; weight: number },
   ) {
-    const updatedUser = await this.userService.insertUserMeasurements(
+    const updatedUser = await this.userService.updateUserMeasurements(
       +id,
       body,
     );

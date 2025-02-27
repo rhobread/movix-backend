@@ -1,0 +1,347 @@
+POST
+/user/register
+{
+    "email" : "mrakha12ipa2@gmail.com",
+    "name" : "Rakha",
+    "password" : "pass1234"
+}
+
+
+PUT
+/user/measurements/:id (ganti sama id usernya)
+{
+    "height" : 100
+    "weight" : 50
+}
+
+
+POST
+/user/measurements/:id (ganti sama id usernya)
+{
+    "height" : 100
+    "weight" : 50
+}
+
+
+GET
+/workout/equipments
+
+
+POST
+/user/equipments/:id (ganti sama id usernya) 
+{
+    "equipmentIds" : [1,2,3,4,5,6]
+}
+
+DELETE
+/user/equipments/:id (ganti sama id usernya) 
+{
+    "equipmentIds" : [1,2,3,4,5,6]
+}
+
+PUT
+/user/availabilities/:id
+{
+    "days_available" : [1, 2, 3, 4, 5, 6],
+    "minutes_available" : [25,25,25,25,25,25]
+}
+
+GET
+user/availability/:user_id
+example output :
+{
+    "statusCode": 200,
+    "message": "get user's availability success",
+    "data": [
+        {
+            "id": 10,
+            "user_id": 11,
+            "day": "monday",
+            "minutes": 30
+        },
+        {
+            "id": 11,
+            "user_id": 11,
+            "day": "wednesday",
+            "minutes": 30
+        },
+        {
+            "id": 12,
+            "user_id": 11,
+            "day": "friday",
+            "minutes": 30
+        }
+    ]
+}
+
+
+GET
+user/equipments/:user_id
+example output :
+{
+    "statusCode": 200,
+    "message": "get user's equipment success",
+    "data": [
+        {
+            "id": 18,
+            "user_id": 11,
+            "equipment_id": 1,
+            "equipment": {
+                "id": 1,
+                "name": "dip bar"
+            }
+        },
+        {
+            "id": 19,
+            "user_id": 11,
+            "equipment_id": 2,
+            "equipment": {
+                "id": 2,
+                "name": "light dumbell (5-20kg)"
+            }
+        },
+        {
+            "id": 20,
+            "user_id": 11,
+            "equipment_id": 3,
+            "equipment": {
+                "id": 3,
+                "name": "medium dumbell (20-50kg)"
+            }
+        },
+        {
+            "id": 21,
+            "user_id": 11,
+            "equipment_id": 9,
+            "equipment": {
+                "id": 9,
+                "name": "pull up bar"
+            }
+        },
+        {
+            "id": 22,
+            "user_id": 11,
+            "equipment_id": 10,
+            "equipment": {
+                "id": 10,
+                "name": "dip bar"
+            }
+        }
+    ]
+}
+
+GET
+workout/workout-plan/:workout_id
+example output:
+{
+    "workouts": [
+        {
+            "date": "Monday, 3rd March 2025",
+            "exercises": [
+                {
+                    "name": "One Arm Pull up",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "level": 4,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ]
+                },
+                {
+                    "name": "dips",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "level": 1,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "triceps",
+                        "chest"
+                    ]
+                }
+            ]
+        },
+        {
+            "date": "Wednesday, 26th February 2025",
+            "exercises": [
+                {
+                    "name": "Side lateral raise",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "level": null,
+                    "totalDuration": 12,
+                    "musclesHit": [
+                        "side delts"
+                    ]
+                },
+                {
+                    "name": "reverse lunge",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "level": null,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "quads"
+                    ]
+                },
+                {
+                    "name": "bodyweight row",
+                    "sets": 1,
+                    "reps": 10,
+                    "weight": null,
+                    "level": 1,
+                    "totalDuration": 5,
+                    "musclesHit": [
+                        "mid back",
+                        "lats",
+                        "biceps"
+                    ]
+                }
+            ]
+        },
+        {
+            "date": "Friday, 28th February 2025",
+            "exercises": [
+                {
+                    "name": "bodyweight row",
+                    "sets": 2,
+                    "reps": 10,
+                    "weight": null,
+                    "level": 1,
+                    "totalDuration": 10,
+                    "musclesHit": [
+                        "mid back",
+                        "lats",
+                        "biceps"
+                    ]
+                },
+                {
+                    "name": "bodyweight tricep extension",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "level": 1,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "triceps"
+                    ]
+                },
+                {
+                    "name": "dumbell bicep curl",
+                    "sets": 2,
+                    "reps": 10,
+                    "weight": 10,
+                    "level": null,
+                    "totalDuration": 8,
+                    "musclesHit": [
+                        "biceps"
+                    ]
+                }
+            ]
+        }
+    ],
+    "musclePoints": {
+        "lats": 36,
+        "biceps": 38,
+        "mid back": 39,
+        "triceps": 39,
+        "chest": 21,
+        "side delts": 30,
+        "quads": 30
+    }
+}
+
+GET
+workout/today/:user_id
+{
+    "statusCode": 200,
+    "message": "Workout for today retrieved successfully",
+    "data": {
+        "workout_id": 10,
+        "date": "2025-03-03T07:28:05.399Z",
+        "exercises": [
+            {
+                "workout_exercise_id": 21,
+                "name": "One Arm Pull up",
+                "sets": 3,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 22,
+                "name": "dips",
+                "sets": 3,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            }
+        ]
+    }
+}
+
+POST
+workout/create (buat insert progress, inputannya ambil dari get today workout yang diatas)
+example input :
+{
+	"user_id" : 2,
+        "workout_id": 1,
+        "date": "2025-03-03T07:01:18.017Z",
+        "exercises": [
+            {
+                "workout_exercise_id": 1,
+                "name": "deadlift",
+                "sets": 3,
+                "reps": 9,
+                "weight_used": 500
+            },
+            {
+                "workout_exercise_id": 2,
+                "name": "Push up",
+                "sets": 3,
+                "reps": 20,
+                "level_done": 1
+            },
+            {
+                "workout_exercise_id": 3,
+                "name": "static tuck front lever",
+                "sets": 3,
+                "reps": 3,
+                "level_done": 1
+            },
+            {
+                "workout_exercise_id": 4,
+                "name": "dumbell bicep curl",
+                "sets": 3,
+                "reps": 12,
+                "weight_used": 20
+            },
+            {
+                "workout_exercise_id": 5,
+                "name": "Side lateral raise",
+                "sets": 3,
+                "reps": 14,
+                "weight_used": 10
+            },
+            {
+                "workout_exercise_id": 6,
+                "name": "bodyweight row",
+                "sets": 3,
+                "reps": 10,
+                "level_done": 1
+            }
+        ]
+    }
+
+POST
+workout/generate/:user_id (cuma bisa di hit kalo height & weight, availabilities dan equipments usernya udah ada)
+
+
+
+Assignment Enrichment 2502005130 Muhammad Rakha Athaillah
