@@ -207,17 +207,23 @@ model workout_per_week_workout {
  * 8. tricep
  * equipment :
  * 1. dip bar
- * 2. light dumbell (5-20kg)
- * 3. medium dumbell (20-50kg)
- * 4. heavy dumbell (50-100kg)
- * 5. barbell (100kg - 200kg)
- * 6. heavy barbell (> 200kg)
- * 7. bar
- * 8. rope, straps
- * 9. pull up bar
- * 10. dip bar
- * 11. squat rack
- * 12. bench
+ * 2. dumbell (5-10kg)
+ * 3. dumbell (10-20kg)
+ * 5. dumbell (20-40kg)
+ * 6. dumbell (40-60kg)
+ * 7. dumbell (60-80kg)
+ * 8. dumbell (80-100kg)
+ * 9. barbell (20kg - 50kg)
+ * 10. barbell (50kg - 100kg)
+ * 11. barbell (100kg - 150kg)
+ * 12. barbell (150kg - 200kg)
+ * 13. barbell (> 200kg)
+ * 14. bar
+ * 15. rope, straps
+ * 16. pull up bar
+ * 17. dip bar
+ * 18. squat rack
+ * 19. bench
  * muscle :
  * 1. lats
  * 2. chest
@@ -302,17 +308,54 @@ model workout_per_week_workout {
  * difficulty : 7
  * level : 4
  * 3. Side lateral raise :
- * equipment : light dumbell
+ * equipment : dumbell (5-10 kg)
  * muscle hit : side delt (10)
  * exercise_cd : 'LR'
  * type : 'weight'
  * group : 'side delt'
+ * difficulty : 1
+ * 3. Side lateral raise :
+ * equipment : dumbell (10-20kg)
+ * muscle hit : side delt (10)
+ * exercise_cd : 'LR'
+ * type : 'weight'
+ * group : 'side delt'
+ * difficulty : 2
+ * 3. Side lateral raise :
+ * equipment : dumbell (20-40kg)
+ * muscle hit : side delt (10)
+ * exercise_cd : 'LR'
+ * type : 'weight'
+ * group : 'side delt'
+ * difficulty : 3
  * 4. dumbell bicep curl :
- * equipment : light dumbell or medium dumbell
+ * equipment : dumbell (5-10 kg)
  * muscle hit : bicep (7)
  * exercise_cd : 'DBC'
  * type : 'weight'
  * group : 'bicep'
+ * difficulty : 1
+ * 4. dumbell bicep curl :
+ * equipment : dumbell (10-20 kg)
+ * muscle hit : bicep (7)
+ * exercise_cd : 'DBC'
+ * type : 'weight'
+ * group : 'bicep'
+ * difficulty : 3
+ * 4. dumbell bicep curl :
+ * equipment : dumbell (20-40 kg)
+ * muscle hit : bicep (7)
+ * exercise_cd : 'DBC'
+ * type : 'weight'
+ * group : 'bicep'
+ * difficulty : 5
+ * 4. dumbell bicep curl :
+ * equipment : dumbell (40-60 kg)
+ * muscle hit : bicep (7)
+ * exercise_cd : 'DBC'
+ * type : 'weight'
+ * group : 'bicep'
+ * difficulty : 7
  * 5. bodyweight tricep extension
  * equipment : dip bar
  * muscle hit : tricep (7)
@@ -322,17 +365,47 @@ model workout_per_week_workout {
  * group : 'tricep'
  * difficulty : 4
  * 6. reverse lunge
- * equipment : medium dumbell
+ * equipment : dumbell (5-10kg)
  * muscle hit : quads (10)
  * exercise_cd : 'LRL'
  * type : 'weight'
  * group : 'leg push'
+ * difficulty : 3
+ * 6. reverse lunge
+ * equipment : dumbell (10-20kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 4
+ * 6. reverse lunge
+ * equipment : dumbell (20-40kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 6
+ * 6. reverse lunge
+ * equipment : dumbell (40-60kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 8
  * 7. barbell squat
- * equipment : barbell, squat rack
+ * equipment : barbell (20-50kg) and squat rack
  * muscle hit : quads (10)
  * exercise_cd : 'LBS'
  * type : 'weight'
  * group : 'leg push'
+ * difficulty : 3
+ * 7. barbell squat
+ * equipment : barbell (50-100kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 6
  * 8. deadlift
  * equipment : barbell or heavy barbell
  * muscle hit : quads (8), hamstring (6), mid back (3)
@@ -453,6 +526,62 @@ model workout_per_week_workout {
  * level : 2
  * group : 'bicep'
  * difficulty : 6
+ * 16. Dumbell Romanian Deadlift
+ * equipment : light dumbell
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'DRDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 1
+ * 16. Dumbell Romanian Deadlift
+ * equipment : medium dumbell
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'DRDL'
+ * type : 'weight'
+ * level : 2
+ * group : 'leg pull'
+ * difficulty : 4
+ * 16. Dumbell Romanian Deadlift
+ * equipment : heavy dumbell
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'DRDL'
+ * type : 'weight'
+ * level : 3
+ * group : 'leg pull'
+ * difficulty : 7
+ * 17. Unilateral Dumbell Romanian Deadlift
+ * equipment : light dumbell
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'URDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 3
+ * 17. Unilateral Dumbell Romanian Deadlift
+ * equipment : medium dumbell
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'URDL'
+ * type : 'weight'
+ * level : 2
+ * group : 'leg pull'
+ * difficulty : 7
+ * 17. Unilateral Dumbell Romanian Deadlift
+ * equipment : heavy dumbell
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'URDL'
+ * type : 'weight'
+ * level : 3
+ * group : 'leg pull'
+ * difficulty : 10
+ * 17. Barbell Dumbell Romanian Deadlift
+ * equipment : barbell
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 5
  */
 
 // make a function that'll take the user's id, then take in their equipments, days_available and minutes_available then generate a workout plan with these requirements :

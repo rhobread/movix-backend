@@ -834,109 +834,115 @@ export class WorkoutService {
     // }
 
     async getWorkoutPlan(workout_per_week_id: number) {
-        // Retrieve the workout week, including the workouts and nested exercise details.
-        const workoutWeek = await this.databaseService.workoutperweek.findUnique({
-            where: { id: workout_per_week_id },
+      // Retrieve the workout week, including the workouts and nested exercise details.
+      const workoutWeek = await this.databaseService.workoutperweek.findUnique({
+        where: { id: workout_per_week_id },
+        include: {
+          workouts: {
             include: {
-                workouts: {
+              workout: {
+                include: {
+                  exercises: {
                     include: {
-                        workout: {
+                      exercise: {
+                        include: {
+                          muscles: {
                             include: {
-                                exercises: {
-                                    include: {
-                                        exercise: {
-                                            include: {
-                                                muscles: {
-                                                    include: {
-                                                        muscle: true,
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
+                              muscle: true,
                             },
+                          },
                         },
+                      },
                     },
+                  },
                 },
+              },
             },
+          },
+        },
+      });
+    
+      if (!workoutWeek) {
+        throw new NotFoundException({
+          statusCode: 404,
+          message: `Workout plan with id ${workout_per_week_id} not found`,
         });
-
-        if (!workoutWeek) {
-            throw new NotFoundException({
-                statusCode: 404,
-                message: `Workout plan with id ${workout_per_week_id} not found`,
-            });
+      }
+    
+      // Helper: Calculate rest time based on intensity.
+      const getRestTime = (intensity: string): number => {
+        switch (intensity.toLowerCase()) {
+          case 'low':
+            return 1;
+          case 'medium':
+            return 2;
+          case 'high':
+            return 4;
+          case 'very high':
+          case 'very_high':
+            return 6;
+          default:
+            return 0;
         }
-
-        // Helper: Calculate rest time based on intensity.
-        const getRestTime = (intensity: string): number => {
-            switch (intensity.toLowerCase()) {
-                case 'low':
-                    return 1;
-                case 'medium':
-                    return 2;
-                case 'high':
-                    return 4;
-                case 'very high':
-                case 'very_high':
-                    return 6;
-                default:
-                    return 0;
-            }
-        };
-
-        const workoutDetails = [];
-        // Object to accumulate total points for each muscle.
-        const musclePoints: Record<string, number> = {};
-
-        // Iterate through each workout of the week.
-        for (const wpw of workoutWeek.workouts) {
-            const workout = wpw.workout;
-            // Format the workout date using Moment.js (example: "monday, 2nd february 2025")
-            const formattedDate = moment(workout.date).format('dddd, Do MMMM YYYY');
-
-            const exercisesArr = [];
-            // Iterate over each workout_exercise record for this workout.
-            for (const we of workout.exercises) {
-                const ex = we.exercise;
-                // Calculate total duration per exercise: (exercise.duration + rest time) * number of sets.
-                const totalDuration = (ex.duration + getRestTime(ex.intensity)) * we.set;
-                // Retrieve muscles hit and their ratings.
-                const musclesHit = ex.muscles.map((em: any) => ({
-                    name: em.muscle.name,
-                    rating: em.rating,
-                }));
-
-                // Accumulate points for each muscle: (sets * rating).
-                for (const m of musclesHit) {
-                    const points = we.set * m.rating;
-                    musclePoints[m.name] = (musclePoints[m.name] || 0) + points;
-                }
-
-                exercisesArr.push({
-                    name: ex.name,
-                    sets: we.set,
-                    reps: we.reps,
-                    weight: we.weight,
-                    level: we.level,
-                    totalDuration: totalDuration,
-                    musclesHit: musclesHit.map(m => m.name),
-                });
-            }
-
-            workoutDetails.push({
-                date: formattedDate,
-                exercises: exercisesArr,
-            });
+      };
+    
+      const workoutDetails = [];
+      // Object to accumulate total points for each muscle.
+      const musclePoints: Record<string, number> = {};
+    
+      // Iterate through each workout of the week.
+      for (const wpw of workoutWeek.workouts) {
+        const workout = wpw.workout;
+        // Format the workout date using Moment.js (example: "monday, 2nd february 2025")
+        const formattedDate = moment(workout.date).format('dddd, Do MMMM YYYY');
+    
+        const exercisesArr = [];
+        let dayTotalDuration = 0; // Accumulate total duration for the day.
+        // Iterate over each workout_exercise record for this workout.
+        for (const we of workout.exercises) {
+          const ex = we.exercise;
+          // Calculate total duration per exercise: (exercise.duration + rest time) * number of sets.
+          const exerciseDuration = ex.duration + getRestTime(ex.intensity);
+          const totalDuration = exerciseDuration * we.set;
+          dayTotalDuration += totalDuration;
+          
+          // Retrieve muscles hit and their ratings.
+          const musclesHit = ex.muscles.map((em: any) => ({
+            name: em.muscle.name,
+            rating: em.rating,
+          }));
+    
+          // Accumulate points for each muscle: (sets * rating).
+          for (const m of musclesHit) {
+            const points = we.set * m.rating;
+            musclePoints[m.name] = (musclePoints[m.name] || 0) + points;
+          }
+    
+          exercisesArr.push({
+            name: ex.name,
+            sets: we.set,
+            reps: we.reps,
+            weight: we.weight,
+            level: we.level,
+            totalDuration: totalDuration,
+            musclesHit: musclesHit.map(m => m.name),
+          });
         }
-
-        // Return the workouts along with the summary of total points per muscle.
-        return {
-            workouts: workoutDetails,
-            musclePoints: musclePoints,
-        };
+    
+        workoutDetails.push({
+          date: formattedDate,
+          exercises: exercisesArr,
+          totalWorkoutDuration: dayTotalDuration, // New field added.
+        });
+      }
+    
+      // Return the workouts along with the summary of total points per muscle.
+      return {
+        workouts: workoutDetails,
+        musclePoints: musclePoints,
+      };
     }
+    
 
 
     async editEquipmentAvailabilities(
