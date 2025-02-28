@@ -343,5 +343,32 @@ POST
 workout/generate/:user_id (cuma bisa di hit kalo height & weight, availabilities dan equipments usernya udah ada)
 
 
-
-Assignment Enrichment 2502005130 Muhammad Rakha Athaillah
+GET
+equipment/recommendation/:user_id (ganti id user, cuma bisa di hit kalo user udah pernah generate plan)
+example output :
+[
+    {
+        "id": 5,
+        "name": "barbell (100kg - 200kg)",
+        "totalScore": 502.5,
+        "muscleScores": {
+            "quads": 0,
+            "hamstring": 502.5,
+            "mid back": 0,
+            "lats": 0,
+            "biceps": 0
+        }
+    },
+    {
+        "id": 4,
+        "name": "heavy dumbell (50-100kg)",
+        "totalScore": 0,
+        "muscleScores": {}
+    },
+    {
+        "id": 6,
+        "name": "heavy barbell (> 200kg)",
+        "totalScore": 0,
+        "muscleScores": {}
+    }
+]

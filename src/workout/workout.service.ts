@@ -397,7 +397,6 @@ export class WorkoutService {
       // *** NEW: Delete all workouts for the user from tomorrow until 7 days later ***
       const tomorrow = moment().add(1, 'days').startOf('day').toDate();
       const sevenDaysLater = moment().add(7, 'days').endOf('day').toDate();
-      // Get workouts IDs in that range.
       const workoutsToDelete = await this.databaseService.workout.findMany({
         where: {
           date: { gte: tomorrow, lte: sevenDaysLater },
@@ -407,26 +406,23 @@ export class WorkoutService {
       });
       const workoutIds = workoutsToDelete.map((w) => w.id);
       if (workoutIds.length > 0) {
-        // Delete dependent workout_exercise records.
         await this.databaseService.workout_exercise.deleteMany({
           where: { workout_id: { in: workoutIds } },
         });
-        // Delete dependent join table entries.
         await this.databaseService.workout_per_week_workout.deleteMany({
           where: { workout_id: { in: workoutIds } },
         });
-        // Finally, delete the workouts.
         await this.databaseService.workout.deleteMany({
           where: { id: { in: workoutIds } },
         });
       }
   
-      // 2. Fetch all exercises with related muscles, equipments, and group (excercise_group) data.
+      // 2. Fetch all exercises with related muscles, equipments, and group data.
       const exercises = await this.databaseService.exercise.findMany({
         include: {
           muscles: { include: { muscle: true } },
           equipments: true,
-          group: true, // Returns an array of excercise_group entries.
+          group: true, // returns array of excercise_group entries
         },
       });
   
@@ -452,11 +448,16 @@ export class WorkoutService {
       const selectedExercises: ExtendedExercise[] = [];
       for (const cd in exercisesByCd) {
         const variants = exercisesByCd[cd];
-        if (variants[0].types.toLowerCase() === 'bodyweight' && variants[0].group && variants[0].group.length > 0) {
+        if (
+          variants[0].types.toLowerCase() === 'bodyweight' &&
+          variants[0].group &&
+          variants[0].group.length > 0
+        ) {
           const groupId = variants[0].group[0].id;
           const userLevel = userGroupLevels[groupId] || 0;
           const validVariants = variants.filter((v) => {
-            if (!v.group || v.group.length === 0 || v.group[0].difficulty == null) return false;
+            if (!v.group || v.group.length === 0 || v.group[0].difficulty == null)
+              return false;
             return v.group[0].difficulty <= userLevel;
           });
           if (validVariants.length > 0) {
@@ -495,7 +496,7 @@ export class WorkoutService {
       const marginMultiplier = 1.2; // up to 20% over nominal minutes
       const globalMusclePoints: Record<string, number> = {};
       const allMuscleNames = (await this.databaseService.muscle.findMany()).map((m) => m.name);
-      allMuscleNames.forEach(name => globalMusclePoints[name] = 0);
+      allMuscleNames.forEach((name) => (globalMusclePoints[name] = 0));
       const overallExerciseSetCount: Record<number, number> = {};
   
       for (let i = 0; i < daysAvailable.length; i++) {
@@ -513,11 +514,15 @@ export class WorkoutService {
         };
   
         while (usedTime < timeLimit) {
-          const candidates = exercisesWithMeta.filter(ex => ex.totalTime <= (timeLimit - usedTime));
+          const candidates = exercisesWithMeta.filter(
+            (ex) => ex.totalTime <= timeLimit - usedTime
+          );
           if (candidates.length === 0) break;
           let bestCandidate = null;
           let bestImbalance = Number.POSITIVE_INFINITY;
           let bestSets = 0;
+          let foundCandidate = false;
+          // First pass: consider candidates that haven't hit the default 3-set cap.
           for (const candidate of candidates) {
             const currentSets = overallExerciseSetCount[candidate.id] || 0;
             const maxAdditional = 3 - currentSets;
@@ -525,6 +530,7 @@ export class WorkoutService {
             const maxByTime = Math.floor((timeLimit - usedTime) / candidate.totalTime);
             const possibleSets = Math.min(maxAdditional, maxByTime);
             if (possibleSets < 1) continue;
+            foundCandidate = true;
             const simulatedGlobal = { ...globalMusclePoints };
             candidate.muscles.forEach((em) => {
               const muscleName = em.muscle.name;
@@ -537,6 +543,24 @@ export class WorkoutService {
               bestSets = possibleSets;
             }
           }
+          // Second pass: if no candidate qualifies due to 3-set cap, relax and allow extra set.
+          if (!foundCandidate) {
+            for (const candidate of candidates) {
+              const maxByTime = Math.floor((timeLimit - usedTime) / candidate.totalTime);
+              if (maxByTime < 1) continue;
+              const simulatedGlobal = { ...globalMusclePoints };
+              candidate.muscles.forEach((em) => {
+                const muscleName = em.muscle.name;
+                simulatedGlobal[muscleName] += em.rating; // adding one set
+              });
+              const imbalance = computeImbalance(simulatedGlobal);
+              if (imbalance < bestImbalance) {
+                bestImbalance = imbalance;
+                bestCandidate = candidate;
+                bestSets = 1;
+              }
+            }
+          }
           if (!bestCandidate) break;
           bestCandidate.muscles.forEach((em) => {
             const muscleName = em.muscle.name;
@@ -544,7 +568,7 @@ export class WorkoutService {
           });
           const prevSets = overallExerciseSetCount[bestCandidate.id] || 0;
           overallExerciseSetCount[bestCandidate.id] = prevSets + bestSets;
-          const existing = dayExercises.find(e => e.exercise.id === bestCandidate.id);
+          const existing = dayExercises.find((e) => e.exercise.id === bestCandidate.id);
           if (existing) {
             existing.sets += bestSets;
           } else {
@@ -562,7 +586,7 @@ export class WorkoutService {
         });
       }
   
-      // 9. Dummy load calculation: weight stays constant; for bodyweight, use the exercise's level.
+      // 9. Dummy load calculation: for weight, constant; for bodyweight, use the selected exercise's level.
       const calculateLoad = (exercise: any) => {
         if (exercise.types === 'weight') return { weight: 10 };
         if (exercise.types === 'bodyweight') return { level: exercise.level };
@@ -603,7 +627,6 @@ export class WorkoutService {
           },
         });
       }
-      console.log(workoutPerWeekRecord)
       return workoutPerWeekRecord;
     }
 
