@@ -794,7 +794,6 @@ export class WorkoutService {
         sets: number;
         reps: number;
         weight_used?: number;
-        level_done?: number;
       }[];
     }) {
       const { user_id, workout_id, date, exercises } = progressInput;
@@ -810,8 +809,7 @@ export class WorkoutService {
               workout_exercise_id: ex.workout_exercise_id,
               sets: ex.sets,
               reps: ex.reps,
-              weight_used: ex.weight_used ?? null,
-              level_done: ex.level_done ?? null,
+              weight_used: ex.weight_used ?? null
             })),
           },
         },
