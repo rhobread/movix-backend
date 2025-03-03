@@ -11,7 +11,6 @@ interface ExtendedExercise {
     // Represents our filtered/selected exercise variant for a given exercise_cd.
     id: number;
     exercise_cd: string;
-    level: number | null;
     name: string;
     intensity: string;
     duration: number;
@@ -110,235 +109,6 @@ export class WorkoutService {
         } catch (error) {
             throw error
         }
-    }
-
-
-    async generateWorkoutPlanForUser(userId: number) {
-        // 1. Fetch the user with their equipments and availabilities.
-        const user = await this.databaseService.users.findUnique({
-            where: { id: userId },
-            include: {
-                equipments: true,
-                availabilities: true,
-            },
-        });
-        if (!user) throw new NotFoundException({
-          statusCode: 404,
-          message: "User with this id doesn't exist",
-        });
-
-        // Convert user's equipments into an array of equipment IDs.
-        const userEquipmentIds = user.equipments.map((ue) => ue.equipment_id);
-
-        // Mapping from day name to day number.
-        const dayNameToNumber: Record<string, number> = {
-            sunday: 0,
-            monday: 1,
-            tuesday: 2,
-            wednesday: 3,
-            thursday: 4,
-            friday: 5,
-            saturday: 6,
-        };
-
-        // Convert availabilities into arrays of day numbers and minutes.
-        const daysAvailable: number[] = [];
-        const minutesAvailable: number[] = [];
-        user.availabilities.forEach((av) => {
-            const dayNum = dayNameToNumber[av.day.toLowerCase()];
-            if (dayNum !== undefined) {
-                daysAvailable.push(dayNum);
-                minutesAvailable.push(av.minutes);
-            }
-        });
-
-        // 2. Fetch all muscles from the muscle table.
-        const muscles = await this.databaseService.muscle.findMany();
-        const allMuscleNames = muscles.map((m) => m.name);
-
-        // Initialize global muscle points for the week.
-        const globalMusclePoints: Record<string, number> = {};
-        allMuscleNames.forEach(name => globalMusclePoints[name] = 0);
-
-        // 3. Fetch all exercises with related muscles and equipments.
-        const exercises = await this.databaseService.exercise.findMany({
-            include: {
-                muscles: { include: { muscle: true } },
-                equipments: true,
-            },
-            where: {
-                OR: [
-                    { level: 1 },
-                    { types: "weight" }
-                ]
-            }
-        });
-
-        // 4. Filter exercises based on user's available equipments.
-        const availableExercises = exercises.filter((ex) => {
-            if (ex.equipments.length === 0) return true;
-            return ex.equipments.every(
-                (eq) => eq.equipment_id === null || userEquipmentIds.includes(eq.equipment_id)
-            );
-        });
-
-        // 5. Helper: Calculate rest time based on intensity.
-        const getRestTime = (intensity: string): number => {
-            switch (intensity.toLowerCase()) {
-                case 'low': return 1;
-                case 'medium': return 2;
-                case 'high': return 4;
-                case 'very high': return 6;
-                case 'very_high': return 6;
-                default: return 0;
-            }
-        };
-
-        // 6. Annotate each exercise with meta-data: points (sum of muscle ratings) and totalTime per set.
-        const exercisesWithMeta = availableExercises.map((ex) => {
-            const points = ex.muscles.reduce((sum, em) => sum + em.rating, 0);
-            const totalTime = ex.duration + getRestTime(ex.intensity);
-            return { ...ex, points, totalTime };
-        });
-
-        // 7. Build weekly workout plans. For each day, we use the remaining available time (with 20% margin)
-        // and choose candidate exercises by checking how their addition would affect the overall (global) muscle balance.
-        const workoutsPlan = [];
-        // Allowed margin: up to 20% over the nominal daily minutes.
-        const marginMultiplier = 1.2;
-
-        for (let i = 0; i < daysAvailable.length; i++) {
-            const nominalTime = minutesAvailable[i];
-            const timeLimit = nominalTime * marginMultiplier;
-            let usedTime = 0;
-            const dayExercises: { exercise: any; sets: number }[] = [];
-            // We'll track set counts per exercise for the entire week.
-            // (This could be separate per day if needed, but here we want overall balance.)
-            const exerciseSetCount: Record<number, number> = {};
-
-            // Helper: Compute overall imbalance across all muscles.
-            // Here we use (max - min) / avg over the globalMusclePoints.
-            const computeImbalance = (mp: Record<string, number>): number => {
-                const values = Object.values(mp);
-                const avg = values.reduce((a, b) => a + b, 0) / values.length || 0;
-                if (avg === 0) return Infinity;
-                const max = Math.max(...values);
-                const min = Math.min(...values);
-                return (max - min) / avg;
-            };
-
-            // While we have time left in the current day:
-            while (usedTime < timeLimit) {
-                // Identify candidate exercises that can fit in the remaining time.
-                const candidates = exercisesWithMeta.filter(
-                    (ex) => ex.totalTime <= (timeLimit - usedTime)
-                );
-                if (candidates.length === 0) break;
-
-                let bestCandidate = null;
-                let bestImbalance = Number.POSITIVE_INFINITY;
-                let bestSets = 0;
-
-                // For each candidate, simulate adding grouped sets (up to 3 per exercise overall).
-                for (const candidate of candidates) {
-                    const currentSets = exerciseSetCount[candidate.id] || 0;
-                    // Allow up to 3 sets per exercise (if available).
-                    const maxAdditional = 3 - currentSets;
-                    if (maxAdditional < 1) continue;
-                    // Determine maximum sets that can fit in the remaining time.
-                    const maxByTime = Math.floor((timeLimit - usedTime) / candidate.totalTime);
-                    const possibleSets = Math.min(maxAdditional, maxByTime);
-                    if (possibleSets < 1) continue;
-
-                    // Clone global muscle points for simulation.
-                    const simulatedGlobal = { ...globalMusclePoints };
-                    candidate.muscles.forEach((em) => {
-                        const muscleName = em.muscle.name;
-                        simulatedGlobal[muscleName] += em.rating * possibleSets;
-                    });
-                    const imbalance = computeImbalance(simulatedGlobal);
-                    // Select candidate if it minimizes overall imbalance.
-                    if (imbalance < bestImbalance) {
-                        bestImbalance = imbalance;
-                        bestCandidate = candidate;
-                        bestSets = possibleSets;
-                    }
-                }
-
-                if (!bestCandidate) break;
-
-                // Update global muscle points with the chosen candidate.
-                bestCandidate.muscles.forEach((em) => {
-                    const muscleName = em.muscle.name;
-                    globalMusclePoints[muscleName] += em.rating * bestSets;
-                });
-                // Update the set count.
-                const prevSets = exerciseSetCount[bestCandidate.id] || 0;
-                exerciseSetCount[bestCandidate.id] = prevSets + bestSets;
-                // Record the exercise in the day plan.
-                const existing = dayExercises.find(e => e.exercise.id === bestCandidate.id);
-                if (existing) {
-                    existing.sets += bestSets;
-                } else {
-                    dayExercises.push({ exercise: bestCandidate, sets: bestSets });
-                }
-                usedTime += bestCandidate.totalTime * bestSets;
-                // Optional: Break early if usedTime is nearly nominal.
-                if (usedTime >= nominalTime * 0.95) break;
-            }
-
-            // Compute the workout date using moment.js.
-            let workoutDate = moment().day(daysAvailable[i]);
-            if (workoutDate.isBefore(moment(), 'day')) workoutDate.add(7, 'days');
-            workoutsPlan.push({
-                date: workoutDate.toDate(),
-                exercises: dayExercises,
-                totalUsedTime: usedTime,
-            });
-        }
-
-        // 8. Dummy load calculation function.
-        const calculateLoad = (exercise: any) => {
-            if (exercise.types === 'weight') return { weight: 10 };
-            if (exercise.types === 'bodyweight') return { level: 1 };
-            return {};
-        };
-
-        // 9. Save the weekly workout plan into the database.
-        const savedWorkouts = [];
-        for (const plan of workoutsPlan) {
-            const workoutRecord = await this.databaseService.workout.create({
-                data: { date: plan.date },
-            });
-            for (const item of plan.exercises) {
-                const load = calculateLoad(item.exercise);
-                await this.databaseService.workout_exercise.create({
-                    data: {
-                        workout_id: workoutRecord.id,
-                        exercise_id: item.exercise.id,
-                        set: item.sets,
-                        reps: 10,
-                        weight: load.weight || null,
-                        level: load.level || null,
-                    },
-                });
-            }
-            savedWorkouts.push(workoutRecord);
-        }
-
-        // 10. Create a workoutperweek record and associate all saved workouts.
-        const workoutPerWeekRecord = await this.databaseService.workoutperweek.create({
-            data: { user_id: userId },
-        });
-        for (const workout of savedWorkouts) {
-            await this.databaseService.workout_per_week_workout.create({
-                data: {
-                    workout_id: workout.id,
-                    workoutperweek_id: workoutPerWeekRecord.id,
-                },
-            });
-        }
-        return workoutPerWeekRecord;
     }
 
 
@@ -608,7 +378,6 @@ export class WorkoutService {
               set: item.sets,
               reps: 10,
               weight: load.weight || null,
-              level: load.level || null,
             },
           });
         }
@@ -923,7 +692,6 @@ export class WorkoutService {
             sets: we.set,
             reps: we.reps,
             weight: we.weight,
-            level: we.level,
             totalDuration: totalDuration,
             musclesHit: musclesHit.map(m => m.name),
           });
@@ -1195,7 +963,6 @@ export class WorkoutService {
                     sets: ep.sets,
                     reps: ep.reps,
                     weight_used: ep.weight_used,
-                    level_done: ep.level_done,
                     musclesHit,
                     totalDuration: (exercise.duration + this.getRestTime(exercise.intensity)) * ep.sets,
                 };

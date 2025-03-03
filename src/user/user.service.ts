@@ -24,7 +24,6 @@ export class UserService {
             { group_id: 5, level: 1 },
             { group_id: 6, level: 1 },
             { group_id: 7, level: 1 },
-            { group_id: 8, level: 1 },
           ],
         },
       },

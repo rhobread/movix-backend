@@ -1,0 +1,865 @@
+-- Insert into group table
+INSERT INTO "group" (id, name) VALUES
+(1, 'leg push'),
+(2, 'leg pull'),
+(3, 'upper pull'),
+(4, 'horizontal push'),
+(5, 'side delt'),
+(6, 'bicep'),
+(7, 'tricep');
+
+-- Insert into equipment table
+INSERT INTO equipment (id, name) VALUES
+(1, 'dip bar'),
+(2, 'dumbbell (5 kg)'),
+(3, 'dumbbell (10 kg)'),
+(4, 'dumbbell (15 kg)'),
+(5, 'dumbbell (20 kg)'),
+(6, 'dumbbell (25 kg)'),
+(7, 'dumbbell (30 kg)'),
+(8, 'dumbbell (35 kg)'),
+(9, 'dumbbell (40 kg)'),
+(10, 'dumbbell (45 kg)'),
+(11, 'dumbbell (50 kg)'),
+(12, 'barbell (20 kg)'),
+(13, 'barbell (40 kg)'),
+(14, 'barbell (60 kg)'),
+(15, 'barbell (80 kg)'),
+(16, 'barbell (100 kg)'),
+(17, 'barbell (120 kg)'),
+(18, 'barbell (140 kg)'),
+(19, 'barbell (160 kg)'),
+(20, 'barbell (180 kg)'),
+(21, 'barbell (200 kg)'),
+(22, 'bar'),
+(23, 'rope, straps'),
+(24, 'pull up bar'),
+(25, 'squat rack'),
+(26, 'bench');
+
+-- Insert into muscle table
+INSERT INTO muscle (id, name) VALUES
+(1, 'lats'),
+(2, 'chest'),
+(3, 'side delts'),
+(4, 'mid back'),
+(5, 'biceps'),
+(6, 'triceps'),
+(7, 'quads'),
+(8, 'hamstring');
+
+-- Optional: Drop existing exercise-related tables (order matters because of FKs)
+-- DROP TABLE IF EXISTS exercise_equipment CASCADE;
+-- DROP TABLE IF EXISTS exercise_muscle CASCADE;
+-- DROP TABLE IF EXISTS excercise_group CASCADE;
+-- DROP TABLE IF EXISTS exercise CASCADE;
+
+--------------------------------------------------
+-- INSERT EXERCISE RECORDS (and related mappings)
+--------------------------------------------------
+
+-- ===============================
+-- PLU Variants (Upper Pull, bodyweight) - Group: 'upper pull' assumed group id = 3
+-- ===============================
+
+-- Variant 1: Pull up (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (1, 'PLU', 'Pull up (3-6)', 'medium', 3, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (1, 3, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (1, 1, 7), (1, 5, 4), (1, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (1, 24);  -- pull up bar
+
+-- Variant 2: Pull up (6-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (2, 'PLU', 'Pull up (6-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (2, 3, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (2, 1, 7), (2, 5, 4), (2, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (2, 24);
+
+-- Variant 3: high one hand Pull up (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (3, 'PLU', 'High one hand Pull up (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (3, 3, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (3, 1, 7), (3, 5, 4), (3, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (3, 24);
+
+-- Variant 4: low one hand Pull up (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (4, 'PLU', 'Low one hand Pull up (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (4, 3, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (4, 1, 7), (4, 5, 4), (4, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (4, 24);
+
+-- Variant 5: low one hand Pull up (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (5, 'PLU', 'Low one hand Pull up (8-12)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (5, 3, 8);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (5, 1, 7), (5, 5, 4), (5, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (5, 24);
+
+-- Variant 6: one arm Pull up (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (6, 'PLU', 'One arm Pull up (3-6)', 'medium', 3, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (6, 3, 9);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (6, 1, 7), (6, 5, 4), (6, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (6, 24);
+
+-- Variant 7: one arm Pull up (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (7, 'PLU', 'One arm Pull up (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (7, 3, 10);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (7, 1, 7), (7, 5, 4), (7, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (7, 24);
+
+-- Variant 8: one arm Pull up (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (8, 'PLU', 'One arm Pull up (8-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (8, 3, 11);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (8, 1, 7), (8, 5, 4), (8, 4, 5);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (8, 24);
+
+-- ===============================
+-- PU Variants (Horizontal Push, bodyweight) - Group id = 4
+-- ===============================
+
+-- Variant 9: Knee Push up (3-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (9, 'PU', 'Knee Push up (3-12)', 'medium', 2, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (9, 4, 1);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (9, 2, 8), (9, 6, 5);
+
+-- Variant 10: Push up (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (10, 'PU', 'Push up (3-6)', 'medium', 2, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (10, 4, 2);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (10, 2, 8), (10, 6, 5);
+
+-- Variant 11: Push up (6-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (11, 'PU', 'Push up (6-12)', 'medium', 2, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (11, 4, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (11, 2, 8), (11, 6, 5);
+
+-- Variant 12: Archer Push up (4-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (12, 'PU', 'Archer Push up (4-6)', 'medium', 2, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (12, 4, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (12, 2, 8), (12, 6, 5);
+
+-- Variant 13: High one arm Push up (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (13, 'PU', 'High one arm Push up (3-6)', 'medium', 2, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (13, 4, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (13, 2, 8), (13, 6, 5);
+
+-- Variant 14: High one arm Push up (6-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (14, 'PU', 'High one arm Push up (6-12)', 'medium', 2, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (14, 4, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (14, 2, 8), (14, 6, 5);
+
+-- Variant 15: Low one arm Push up (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (15, 'PU', 'Low one arm Push up (3-6)', 'medium', 2, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (15, 4, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (15, 2, 8), (15, 6, 5);
+
+-- Variant 16: Low one arm Push up (6-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (16, 'PU', 'Low one arm Push up (6-12)', 'medium', 2, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (16, 4, 8);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (16, 2, 8), (16, 6, 5);
+
+-- Variant 17: One arm Push up (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (17, 'PU', 'One arm Push up (3-6)', 'medium', 2, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (17, 4, 9);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (17, 2, 8), (17, 6, 5);
+
+-- Variant 18: One arm Push up (6-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (18, 'PU', 'One arm Push up (6-12)', 'medium', 2, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (18, 4, 10);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (18, 2, 8), (18, 6, 5);
+
+-- ===============================
+-- LR Variants (Side lateral raise, weight) - Group: 'side delt' assumed group id = 5
+-- ===============================
+-- Variant 19: Side lateral raise (5-15) for dumbbell (5 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (19, 'LR', 'Side lateral raise (5-15)', 'medium', 2, 'weight', 15);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (19, 5, 1);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (19, 3, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (19, 2);
+-- Variant 20: Side lateral raise (15-30) for dumbbell (5 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (20, 'LR', 'Side lateral raise (15-30)', 'medium', 2, 'weight', 30);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (20, 5, 2);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (20, 3, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (20, 2);
+-- Variant 21: Side lateral raise (5-15) for dumbbell (10 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (21, 'LR', 'Side lateral raise (5-15)', 'medium', 2, 'weight', 15);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (21, 5, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (21, 3, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (21, 3);
+-- Variant 22: Side lateral raise (15-30) for dumbbell (10 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (22, 'LR', 'Side lateral raise (15-30)', 'medium', 2, 'weight', 30);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (22, 5, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (22, 3, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (22, 3);
+-- Variant 23: Side lateral raise (5-15) for dumbbell (15 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (23, 'LR', 'Side lateral raise (5-15)', 'medium', 2, 'weight', 15);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (23, 5, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (23, 3, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (23, 4);
+-- Variant 24: Side lateral raise (15-30) for dumbbell (15 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (24, 'LR', 'Side lateral raise (15-30)', 'medium', 2, 'weight', 30);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (24, 5, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (24, 3, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (24, 4);
+-- Variant 25: Side lateral raise (5-15) for dumbbell (20 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (25, 'LR', 'Side lateral raise (5-15)', 'medium', 2, 'weight', 15);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (25, 5, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (25, 3, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (25, 5);
+
+-- ===============================
+-- DBC Variants (Dumbell bicep curl, weight) - Group: 'bicep' assumed group id = 6
+-- ===============================
+-- Variant 26: Dumbell bicep curl (8-12) for dumbbell (5 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (26, 'DBC', 'Dumbell bicep curl (8-12)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (26, 6, 1);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (26, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (26, 2);
+-- Variant 27: Dumbell bicep curl (12-15) for dumbbell (5 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (27, 'DBC', 'Dumbell bicep curl (12-15)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (27, 6, 2);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (27, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (27, 2);
+-- Variant 28: Dumbell bicep curl (4-8) for dumbbell (10 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (28, 'DBC', 'Dumbell bicep curl (4-8)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (28, 6, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (28, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (28, 3);
+-- Variant 29: Dumbell bicep curl (8-12) for dumbbell (10 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (29, 'DBC', 'Dumbell bicep curl (8-12)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (29, 6, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (29, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (29, 3);
+-- Variant 30: Dumbell bicep curl (12-15) for dumbbell (10 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (30, 'DBC', 'Dumbell bicep curl (12-15)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (30, 6, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (30, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (30, 3);
+-- Variant 31: Dumbell bicep curl (6-8) for dumbbell (15 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (31, 'DBC', 'Dumbell bicep curl (6-8)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (31, 6, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (31, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (31, 4);
+-- Variant 32: Dumbell bicep curl (8-15) for dumbbell (15 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (32, 'DBC', 'Dumbell bicep curl (8-15)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (32, 6, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (32, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (32, 4);
+-- Variant 33: Dumbell bicep curl (6-8) for dumbbell (20 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (33, 'DBC', 'Dumbell bicep curl (6-8)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (33, 6, 8);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (33, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (33, 5);
+-- Variant 34: Dumbell bicep curl (8-15) for dumbbell (20 kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (34, 'DBC', 'Dumbell bicep curl (8-15)', 'medium', 2, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (34, 6, 9);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (34, 5, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (34, 5);
+
+-- ===============================
+-- BTC Variants (Tricep extensions, bodyweight) - Group: 'tricep' assumed group id = 7
+-- ===============================
+-- Variant 35: High bodyweight tricep extension (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (35, 'BTC', 'High bodyweight tricep extension (3-6)', 'medium', 3, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (35, 7, 1);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (35, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (35, 1);
+-- Variant 36: High bodyweight tricep extension (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (36, 'BTC', 'High bodyweight tricep extension (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (36, 7, 2);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (36, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (36, 1);
+-- Variant 37: High bodyweight tricep extension (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (37, 'BTC', 'High bodyweight tricep extension (8-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (37, 7, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (37, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (37, 1);
+-- Variant 38: Bodyweight tricep extension (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (38, 'BTC', 'Bodyweight tricep extension (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (38, 7, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (38, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (38, 1);
+-- Variant 39: Bodyweight tricep extension (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (39, 'BTC', 'Bodyweight tricep extension (8-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (39, 7, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (39, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (39, 1);
+-- Variant 40: Low bodyweight tricep extension (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (40, 'BTC', 'Low bodyweight tricep extension (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (40, 7, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (40, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (40, 1);
+-- Variant 41: Low bodyweight tricep extension (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (41, 'BTC', 'Low bodyweight tricep extension (8-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (41, 7, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (41, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (41, 1);
+-- Variant 42: One arm high bodyweight tricep extension (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (42, 'BTC', 'One arm high bodyweight tricep extension (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (42, 7, 8);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (42, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (42, 1);
+-- Variant 43: One arm high bodyweight tricep extension (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (43, 'BTC', 'One arm high bodyweight tricep extension (8-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (43, 7, 9);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (43, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (43, 1);
+-- Variant 44: One arm bodyweight tricep extension (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (44, 'BTC', 'One arm bodyweight tricep extension (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (44, 7, 10);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (44, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (44, 1);
+-- Variant 45: One arm bodyweight tricep extension (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (45, 'BTC', 'One arm bodyweight tricep extension (8-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (45, 7, 11);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (45, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (45, 1);
+-- Variant 46: One arm high bodyweight tricep extension (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (46, 'BTC', 'One arm high bodyweight tricep extension (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (46, 7, 12);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (46, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (46, 1);
+-- Variant 47: One arm high bodyweight tricep extension (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (47, 'BTC', 'One arm high bodyweight tricep extension (8-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (47, 7, 13);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (47, 6, 7);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (47, 1);
+
+-- ===============================
+-- LRL Variants (Reverse lunge, weight) - Group: 'leg push' assumed group id = 1
+-- ===============================
+-- Variant 48: Reverse lunge (6-12), equipment: null, difficulty: 1, max_rep: 12
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (48, 'LRL', 'Reverse lunge (6-12)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (48, 1, 1);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (48, 7, 10);
+-- Variant 49: Reverse lunge (12-20), equipment: null, difficulty: 2, max_rep: 20
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (49, 'LRL', 'Reverse lunge (12-20)', 'medium', 3, 'weight', 20);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (49, 1, 2);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (49, 7, 10);
+-- Variant 50: Reverse lunge (20-30), equipment: null, difficulty: 3, max_rep: 30
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (50, 'LRL', 'Reverse lunge (20-30)', 'medium', 3, 'weight', 30);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (50, 1, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (50, 7, 10);
+-- Variant 51: Reverse lunge (6-12) for dumbbell (10kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (51, 'LRL', 'Reverse lunge (6-12) for dumbbell (10kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (51, 1, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (51, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (51, 3);
+-- Variant 52: Reverse lunge (6-12) for dumbbell (15kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (52, 'LRL', 'Reverse lunge (6-12) for dumbbell (15kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (52, 1, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (52, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (52, 4);
+-- Variant 53: Reverse lunge (6-12) for dumbbell (20kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (53, 'LRL', 'Reverse lunge (6-12) for dumbbell (20kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (53, 1, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (53, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (53, 5);
+-- Variant 54: Reverse lunge (6-12) for dumbbell (25kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (54, 'LRL', 'Reverse lunge (6-12) for dumbbell (25kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (54, 1, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (54, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (54, 6);
+-- Variant 55: Reverse lunge (6-12) for dumbbell (30kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (55, 'LRL', 'Reverse lunge (6-12) for dumbbell (30kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (55, 1, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (55, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (55, 7);
+-- Variant 56: Reverse lunge (6-12) for dumbbell (35kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (56, 'LRL', 'Reverse lunge (6-12) for dumbbell (35kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (56, 1, 8);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (56, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (56, 8);
+-- Variant 57: Reverse lunge (6-12) for dumbbell (40kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (57, 'LRL', 'Reverse lunge (6-12) for dumbbell (40kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (57, 1, 9);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (57, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (57, 9);
+-- Variant 58: Reverse lunge (6-12) for dumbbell (45kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (58, 'LRL', 'Reverse lunge (6-12) for dumbbell (45kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (58, 1, 10);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (58, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (58, 10);
+-- Variant 59: Reverse lunge (6-12) for dumbbell (50kg)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (59, 'LRL', 'Reverse lunge (6-12) for dumbbell (50kg)', 'medium', 3, 'weight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (59, 1, 11);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (59, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (59, 11);
+
+-- ===============================
+-- LBS Variants (Barbell squat, weight) - Group: 'leg push' (group id = 1)
+-- ===============================
+-- Variant 60: Barbell squat (6-10) for barbell (20kg) and squat rack, difficulty: 3, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (60, 'LBS', 'Barbell squat (6-10) - (20kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (60, 1, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (60, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (60, 12), (60, 25);
+-- Variant 61: Barbell squat (6-10) for barbell (40kg) and squat rack, difficulty: 4, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (61, 'LBS', 'Barbell squat (6-10) - (40kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (61, 1, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (61, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (61, 13), (61, 25);
+-- Variant 62: Barbell squat (6-10) for barbell (60kg) and squat rack, difficulty: 5, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (62, 'LBS', 'Barbell squat (6-10) - (60kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (62, 1, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (62, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (62, 14), (62, 25);
+-- Variant 63: Barbell squat (6-10) for barbell (80kg) and squat rack, difficulty: 6, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (63, 'LBS', 'Barbell squat (6-10) - (80kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (63, 1, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (63, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (63, 15), (63, 25);
+-- Variant 64: Barbell squat (6-10) for barbell (100kg) and squat rack, difficulty: 7, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (64, 'LBS', 'Barbell squat (6-10) - (100kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (64, 1, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (64, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (64, 16), (64, 25);
+-- Variant 65: Barbell squat (6-10) for barbell (120kg) and squat rack, difficulty: 8, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (65, 'LBS', 'Barbell squat (6-10) - (120kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (65, 1, 8);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (65, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (65, 17), (65, 25);
+-- Variant 66: Barbell squat (6-10) for barbell (140kg) and squat rack, difficulty: 9, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (66, 'LBS', 'Barbell squat (6-10) - (140kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (66, 1, 9);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (66, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (66, 18), (66, 25);
+-- Variant 67: Barbell squat (6-10) for barbell (160kg) and squat rack, difficulty: 10, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (67, 'LBS', 'Barbell squat (6-10) - (160kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (67, 1, 10);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (67, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (67, 19), (67, 25);
+-- Variant 68: Barbell squat (6-10) for barbell (180kg) and squat rack, difficulty: 11, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (68, 'LBS', 'Barbell squat (6-10) - (180kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (68, 1, 11);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (68, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (68, 20), (68, 25);
+-- Variant 69: Barbell squat (6-10) for barbell (200kg) and squat rack, difficulty: 12, max_rep: 10
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (69, 'LBS', 'Barbell squat (6-10) - (200kg + squat rack)', 'high', 4, 'weight', 10);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (69, 1, 12);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (69, 7, 10);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (69, 21), (69, 25);
+
+-- ===============================
+-- LD Variants (Deadlift, weight) - Group: 'leg push' (group id = 1)
+-- ===============================
+-- Variant 70: Deadlift (4-8) for barbell (20kg), difficulty: 1, max_rep: 8; muscles: quads (8), hamstring (6), mid back (3)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (70, 'LD', 'Deadlift (4-8) - (20kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (70, 1, 1);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (70, 7, 8), (70, 8, 6), (70, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (70, 12);
+-- Variant 71: Deadlift (4-8) for barbell (40kg), difficulty: 2, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (71, 'LD', 'Deadlift (4-8) - (40kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (71, 1, 2);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (71, 7, 8), (71, 8, 6), (71, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (71, 13);
+-- Variant 72: Deadlift (4-8) for barbell (60kg), difficulty: 3, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (72, 'LD', 'Deadlift (4-8) - (60kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (72, 1, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (72, 7, 8), (72, 8, 6), (72, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (72, 14);
+-- Variant 73: Deadlift (4-8) for barbell (80kg), difficulty: 4, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (73, 'LD', 'Deadlift (4-8) - (80kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (73, 1, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (73, 7, 8), (73, 8, 6), (73, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (73, 15);
+-- Variant 74: Deadlift (4-8) for barbell (100kg), difficulty: 5, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (74, 'LD', 'Deadlift (4-8) - (100kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (74, 1, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (74, 7, 8), (74, 8, 6), (74, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (74, 16);
+-- Variant 75: Deadlift (4-8) for barbell (120kg), difficulty: 6, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (75, 'LD', 'Deadlift (4-8) - (120kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (75, 1, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (75, 7, 8), (75, 8, 6), (75, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (75, 17);
+-- Variant 76: Deadlift (4-8) for barbell (140kg), difficulty: 7, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (76, 'LD', 'Deadlift (4-8) - (140kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (76, 1, 7);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (76, 7, 8), (76, 8, 6), (76, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (76, 18);
+-- Variant 77: Deadlift (4-8) for barbell (160kg), difficulty: 8, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (77, 'LD', 'Deadlift (4-8) - (160kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (77, 1, 8);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (77, 7, 8), (77, 8, 6), (77, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (77, 19);
+-- Variant 78: Deadlift (4-8) for barbell (180kg), difficulty: 9, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (78, 'LD', 'Deadlift (4-8) - (180kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (78, 1, 9);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (78, 7, 8), (78, 8, 6), (78, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (78, 20);
+-- Variant 79: Deadlift (4-8) for barbell (200kg), difficulty: 10, max_rep: 8.
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (79, 'LD', 'Deadlift (4-8) - (200kg)', 'high', 4, 'weight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (79, 1, 10);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (79, 7, 8), (79, 8, 6), (79, 4, 3);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (79, 21);
+
+-- ===============================
+-- BR Variants (Bodyweight row and variants, bodyweight, Group: 'upper pull' assumed group id = 3)
+-- ===============================
+-- Variant 80: Bodyweight row (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (80, 'BR', 'Bodyweight row (3-6)', 'medium', 3, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (80, 3, 1);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (80, 4, 8), (80, 1, 5), (80, 5, 4);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (80, 1);  -- dip bar
+-- Variant 81: Bodyweight row (6-8)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (81, 'BR', 'Bodyweight row (6-8)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (81, 3, 2);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (81, 4, 8), (81, 1, 5), (81, 5, 4);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (81, 1);
+-- Variant 82: Bodyweight row (8-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (82, 'BR', 'Bodyweight row (8-12)', 'medium', 3, 'bodyweight', 8);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (82, 3, 3);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (82, 4, 8), (82, 1, 5), (82, 5, 4);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (82, 1);
+-- Variant 83: Bodyweight archer row (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (83, 'BR', 'Bodyweight archer row (3-6)', 'medium', 3, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (83, 3, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (83, 4, 8), (83, 1, 5), (83, 5, 4);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (83, 1);
+-- Variant 84: Bodyweight archer row (6-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (84, 'BR', 'Bodyweight archer row (6-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (84, 3, 4);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (84, 4, 8), (84, 1, 5), (84, 5, 4);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (84, 1);
+-- Variant 85: One arm bodyweight row (3-6)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (85, 'BR', 'One arm bodyweight row (3-6)', 'medium', 3, 'bodyweight', 6);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (85, 3, 5);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (85, 4, 8), (85, 1, 5), (85, 5, 4);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (85, 1);
+-- Variant 86: One arm bodyweight row (6-12)
+INSERT INTO exercise (id, exercise_cd, name, intensity, duration, types, max_rep)
+VALUES (86, 'BR', 'One arm bodyweight row (6-12)', 'medium', 3, 'bodyweight', 12);
+INSERT INTO excercise_group (excercise_id, group_id, difficulty)
+VALUES (86, 3, 6);
+INSERT INTO exercise_muscle (exercise_id, muscle_id, rating)
+VALUES (86, 4, 8), (86, 1, 5), (86, 5, 4);
+INSERT INTO exercise_equipment (exercise_id, equipment_id)
+VALUES (86, 1);
+
+--------------------------------------------------
+-- End of Insert Statements
+--------------------------------------------------

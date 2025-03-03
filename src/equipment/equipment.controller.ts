@@ -19,4 +19,9 @@ export class EquipmentController {
   async getEquipmentRecommendationsByUser(@Param('user_id') user_id:string){
     return await this.equipmentService.getTopEquipmentRecommendationsFromLatestWorkout(+user_id)
   }
+
+  @Get('all')
+  async getAllEquipment(){
+    return await this.equipmentService.getAllEquipments()
+  }
 }

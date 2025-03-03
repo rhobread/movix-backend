@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
@@ -196,5 +196,22 @@ export class EquipmentService {
     
         // Now return recommendations based on these musclePoints.
         return await this.getEquipmentRecommendations(userId, musclePoints);
+      }
+
+      async getAllEquipments(){
+        try {
+          const result = await this.databaseService.equipment.findMany()
+          return ({
+            statusCode:200,
+            message : "equipment get",
+            data : result
+          })
+        } catch (error) {
+          throw new NotFoundException({
+            statusCode: 404,
+            message: "Equipment not found",
+            data:[]
+          })
+        }
       }
 }
