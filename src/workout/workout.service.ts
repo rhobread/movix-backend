@@ -835,8 +835,6 @@ export class WorkoutService {
         if (!we) continue;
     
         const exercise = we.exercise;
-        // Only consider bodyweight exercises for leveling up.
-        if (exercise.types.toLowerCase() !== 'bodyweight') continue;
     
         // Use the max_rep value from the exercise (or Infinity if not set).
         const maxRep = exercise.max_rep || Infinity;
