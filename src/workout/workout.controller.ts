@@ -15,9 +15,19 @@ export class WorkoutController {
     return await this.workoutService.getAllEquipments()
   }
 
-  @Get('workout-plan/:user_id')
-  async getWorkoutPlan(@Param('user_id') user_id: string) {
-    return await this.workoutService.getWorkoutPlan(+user_id)
+  @Get('workout-plan/:workout_per_week_id')
+  async getWorkoutPlan(@Param('workout_per_week_id') workout_per_week_id: string) {
+    return await this.workoutService.getWorkoutPlan(+workout_per_week_id)
+  }
+
+  @Get('user/:user_id')
+  async getWorkoutByUser(@Param('user_id') user_id:string){
+    return await this.workoutService.getUserWorkouts(+user_id)
+  }
+
+  @Get('detail/:workout_id')
+  async getWorkoutDetail(@Param('workout_id') workout_id:string){
+    return await this.workoutService.getWorkoutById(+workout_id)
   }
 
   @Get('equipment/get/:user_id')

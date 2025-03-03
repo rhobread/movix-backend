@@ -93,8 +93,9 @@ model exercise {
   level       Int?
   name        String
   intensity   String
-  duration    Int
+  duration    Int?
   types       String?
+  max_rep     Int?
   muscles     exercise_muscle[]
   equipments  exercise_equipment[]
   workouts    workout_exercise[]
@@ -199,31 +200,38 @@ model workout_per_week_workout {
  * group :
  * 1. leg push
  * 2. leg pull
- * 3. vertical pull
+ * 3. upper pull
  * 4. horizontal push
- * 5. horizontal pull
- * 6. side delt
- * 7. bicep
- * 8. tricep
+ * 5. side delt
+ * 6. bicep
+ * 7. tricep
  * equipment :
  * 1. dip bar
- * 2. dumbell (5-10kg)
- * 3. dumbell (10-20kg)
- * 5. dumbell (20-40kg)
- * 6. dumbell (40-60kg)
- * 7. dumbell (60-80kg)
- * 8. dumbell (80-100kg)
- * 9. barbell (20kg - 50kg)
- * 10. barbell (50kg - 100kg)
- * 11. barbell (100kg - 150kg)
- * 12. barbell (150kg - 200kg)
- * 13. barbell (> 200kg)
- * 14. bar
- * 15. rope, straps
- * 16. pull up bar
- * 17. dip bar
- * 18. squat rack
- * 19. bench
+ * 2. dumbell (5 kg)
+ * 3. dumbell (10 kg)
+ * 5. dumbell (15 kg)
+ * 6. dumbell (20 kg)
+ * 7. dumbell (25 kg)
+ * 8. dumbell (30 kg)
+ * 9. dumbell (35 kg)
+ * 10. dumbell (40 kg)
+ * 11. dumbell (45 kg)
+ * 12. dumbell (50 kg)
+ * 13. barbell (20 kg)
+ * 14. barbell (40 kg)
+ * 15. barbell (60 kg)
+ * 16. barbell (80 kg)
+ * 17. barbell (100 kg)
+ * 18. barbell (120 kg)
+ * 19. barbell (140 kg)
+ * 20. barbell (160 kg)
+ * 21. barbell (180 kg)
+ * 22. barbell (200 kg)
+ * 23. bar
+ * 24. rope, straps
+ * 25. pull up bar
+ * 26. squat rack
+ * 27. bench
  * muscle :
  * 1. lats
  * 2. chest
@@ -236,46 +244,104 @@ model workout_per_week_workout {
  * group:
  * 1. leg push
  * 2. leg pull
- * 3. vertical pull
+ * 3. upper pull
  * 4. horizontal push
- * 5. horizontal pull
+ * 5. upper pull
  * 6. side delt
  * 7. bicep
  * 8. tricep
  * excersise :
- * 1. Pull up
+ * 1. Pull up (3-6)
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
- * group : 'vertical pull'
+ * group : 'upper pull'
+ * difficulty : 4
+ * level : 1
+ * max_rep : 6
+ * 1. Pull up (6-12)
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * group : 'upper pull'
  * difficulty : 5
  * level : 1
- * 1. high one hand Pull up
+ * max_rep : 12
+ * 1. high one hand Pull up (6-8)
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 6
  * level : 2
- * 1. low one hand Pull up
+ * max_rep : 8
+ * 1. low one hand Pull up (6-8)
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 7
  * level : 3
- * 1. one arm Pull up
+ * max_rep : 8
+ * 1. low one hand Pull up (8-12)
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)
  * exercise_cd : 'PLU'
  * type : 'bodyweight'
- * group : 'vertical pull'
+ * group : 'upper pull'
+ * difficulty : 8
+ * level : 3
+ * max_rep : 8
+ * 1. one arm Pull up (3-6)
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * group : 'upper pull'
  * difficulty : 9
  * level : 4
- * 2. Push up :
+ * max_rep : 6
+ * 1. one arm Pull up (6-8)
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * group : 'upper pull'
+ * difficulty : 10
+ * level : 4
+ * max_rep : 8
+ * 1. one arm Pull up (8-12)
+ * equipment : pull up bar,
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * group : 'upper pull'
+ * difficulty : 11
+ * level : 4
+ * max_rep : 12
+ * 2. Knee Push up (3-12) :
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 1
+ * level : 1
+ * max_rep : 12
+ * 2. Push up (3-6) :
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 2
+ * level : 1
+ * max_rep : 6
+ * 2. Push up (6-12) :
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
@@ -283,7 +349,17 @@ model workout_per_week_workout {
  * group : 'horizontal push'
  * difficulty : 3
  * level : 1
- * 2. high one arm Push up :
+ * max_rep : 6
+ * 2. archer Push up (4-6) :
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 4
+ * level : 1
+ * max_rep : 6
+ * 2. high one arm Push up (3-6):
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
@@ -291,22 +367,52 @@ model workout_per_week_workout {
  * group : 'horizontal push'
  * difficulty : 5
  * level : 2
- * 2. low one arm Push up :
+ * max_rep : 6
+ * 2. high one arm Push up (6-12):
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
  * type : 'bodyweight'
  * group : 'horizontal push'
  * difficulty : 6
- * level : 3
- * 2. one arm Push up :
+ * level : 2
+ * max_rep : 12
+ * 2. low one arm Push up (3-6):
  * equipment : null
  * muscle hit : chest (8), triceps (5)
  * exercise_cd : 'PU'
  * type : 'bodyweight'
  * group : 'horizontal push'
  * difficulty : 7
+ * level : 3
+ * max_rep : 6
+ * 2. low one arm Push up (6-12):
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 8
+ * level : 3
+ * max_rep : 12
+ * 2. one arm Push up (3-6):
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 9
  * level : 4
+ * max_rep : 6
+ * 2. one arm Push up (6-12):
+ * equipment : null
+ * muscle hit : chest (8), triceps (5)
+ * exercise_cd : 'PU'
+ * type : 'bodyweight'
+ * group : 'horizontal push'
+ * difficulty : 10
+ * level : 4
+ * max_rep : 12
  * 3. Side lateral raise :
  * equipment : dumbell (5-10 kg)
  * muscle hit : side delt (10)
@@ -356,92 +462,428 @@ model workout_per_week_workout {
  * type : 'weight'
  * group : 'bicep'
  * difficulty : 7
- * 5. bodyweight tricep extension
+ * 5. high bodyweight tricep extension (3-6)
  * equipment : dip bar
  * muscle hit : tricep (7)
  * exercise_cd : 'BTC'
  * type : 'bodyweight'
  * level : 1
  * group : 'tricep'
+ * max_rep : 6
+ * difficulty : 1
+ * 5. high bodyweight tricep extension (6-8)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 8
+ * difficulty : 2
+ * 5. high bodyweight tricep extension (8-12)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 12
+ * difficulty : 3
+ * 5. bodyweight tricep extension (6-8)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 8
  * difficulty : 4
- * 6. reverse lunge
- * equipment : dumbell (5-10kg)
+ * 5. bodyweight tricep extension (8-12)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 12
+ * difficulty : 5
+ * 5. low bodyweight tricep extension (6-8)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 8
+ * difficulty : 6
+ * 5. low bodyweight tricep extension (8-12)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 12
+ * difficulty : 7
+ * 5. one arm high bodyweight tricep extension (6-8)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 8
+ * difficulty : 8
+ * 5. one arm high bodyweight tricep extension (8-12)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 12
+ * difficulty : 9
+ * 5. one arm bodyweight tricep extension (6-8)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 8
+ * difficulty : 10
+ * 5. one arm bodyweight tricep extension (8-12)
+ * equipment : dip bar
+ * muscle hit : tricep (7)
+ * exercise_cd : 'BTC'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'tricep'
+ * max_rep : 12
+ * difficulty : 11
+ * 6. reverse lunge (6-12)
+ * equipment : null
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 1
+ * max_rep : 12
+ * 6. reverse lunge (12-20)
+ * equipment : null
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 2
+ * max_rep : 20
+ * 6. reverse lunge (20-30)
+ * equipment : null
  * muscle hit : quads (10)
  * exercise_cd : 'LRL'
  * type : 'weight'
  * group : 'leg push'
  * difficulty : 3
- * 6. reverse lunge
- * equipment : dumbell (10-20kg)
+ * max_rep : 30
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (10kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 3
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (15kg)
  * muscle hit : quads (10)
  * exercise_cd : 'LRL'
  * type : 'weight'
  * group : 'leg push'
  * difficulty : 4
- * 6. reverse lunge
- * equipment : dumbell (20-40kg)
+ * max_rep : 12
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (20kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 5
+ * max_rep : 12
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (25kg)
  * muscle hit : quads (10)
  * exercise_cd : 'LRL'
  * type : 'weight'
  * group : 'leg push'
  * difficulty : 6
- * 6. reverse lunge
- * equipment : dumbell (40-60kg)
+ * max_rep : 12
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (30kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 7
+ * max_rep : 12
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (35kg)
  * muscle hit : quads (10)
  * exercise_cd : 'LRL'
  * type : 'weight'
  * group : 'leg push'
  * difficulty : 8
- * 7. barbell squat
- * equipment : barbell (20-50kg) and squat rack
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (40kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 9
+ * max_rep : 12
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (45kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 10
+ * max_rep : 12
+ * 6. reverse lunge (6-12)
+ * equipment : dumbell (50kg)
+ * muscle hit : quads (10)
+ * exercise_cd : 'LRL'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 11
+ * max_rep : 12
+ * 7. barbell squat (6-10)
+ * equipment : barbell (20kg) and squat rack
  * muscle hit : quads (10)
  * exercise_cd : 'LBS'
  * type : 'weight'
  * group : 'leg push'
  * difficulty : 3
- * 7. barbell squat
- * equipment : barbell (50-100kg) and squat rack
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (40kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 4
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (60kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 5
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (80kg) and squat rack
  * muscle hit : quads (10)
  * exercise_cd : 'LBS'
  * type : 'weight'
  * group : 'leg push'
  * difficulty : 6
- * 8. deadlift
- * equipment : barbell or heavy barbell
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (100kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 7
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (120kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 8
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (140kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 9
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (160kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 10
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (180kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 11
+ * max_rep : 10
+ * 7. barbell squat (6-10)
+ * equipment : barbell (200kg) and squat rack
+ * muscle hit : quads (10)
+ * exercise_cd : 'LBS'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 12
+ * max_rep : 10
+ * 8. deadlift (4-8)
+ * equipment : barbell (20kg)
  * muscle hit : quads (8), hamstring (6), mid back (3)
  * exercise_cd : 'LD'
  * type : 'weight'
  * group : 'leg push'
- * 9. bodyweight row
+ * difficulty : 1
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (40kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 2
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (60kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 3
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (80kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 4
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (100kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 5
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (120kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 6
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (140kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 7
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (160kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 8
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (180kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 9
+ * max_rep : 8
+ * 8. deadlift (4-8)
+ * equipment : barbell (200kg)
+ * muscle hit : quads (8), hamstring (6), mid back (3)
+ * exercise_cd : 'LD'
+ * type : 'weight'
+ * group : 'leg push'
+ * difficulty : 10
+ * max_rep : 8
+ * 9. bodyweight row (3-6)
  * equipment : dip bar
  * muscle hit : mid back (8), lats (5), biceps (4)
  * exercise_cd : 'BR'
  * type : 'bodyweight'
  * level : 1
- * group : 'horizontal pull'
- * difficulty : 2
- * 9. bodyweight archer row
+ * group : 'upper pull'
+ * difficulty : 1
+ * max_rep : 6
+ * 9. bodyweight row (6-8)
  * equipment : dip bar
  * muscle hit : mid back (8), lats (5), biceps (4)
  * exercise_cd : 'BR'
  * type : 'bodyweight'
- * group : 'horizontal pull'
+ * level : 1
+ * group : 'upper pull'
+ * difficulty : 2
+ * max_rep : 8
+ * 9. bodyweight row (8-12)
+ * equipment : dip bar
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * exercise_cd : 'BR'
+ * type : 'bodyweight'
+ * level : 1
+ * group : 'upper pull'
+ * difficulty : 3
+ * max_rep : 8
+ * 9. bodyweight archer row (3-6)
+ * equipment : dip bar
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * exercise_cd : 'BR'
+ * type : 'bodyweight'
+ * group : 'upper pull'
  * difficulty : 4
  * level : 2
- * 9. one arm bodyweight row
+ * max_rep : 6
+ * 9. bodyweight archer row (6-12)
  * equipment : dip bar
  * muscle hit : mid back (8), lats (5), biceps (4)
  * exercise_cd : 'BR'
  * type : 'bodyweight'
- * group : 'horizontal pull'
+ * group : 'upper pull'
+ * difficulty : 4
+ * level : 2
+ * max_rep : 12
+ * 9. one arm bodyweight row (3-6)
+ * equipment : dip bar
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * exercise_cd : 'BR'
+ * type : 'bodyweight'
+ * group : 'upper pull'
  * difficulty : 2
  * level : 3
+ * max_rep : 6
+ * 9. one arm bodyweight row (6-12)
+ * equipment : dip bar
+ * muscle hit : mid back (8), lats (5), biceps (4)
+ * exercise_cd : 'BR'
+ * type : 'bodyweight'
+ * group : 'upper pull'
+ * difficulty : 2
+ * level : 3
+ * max_rep : 12
  * 10.barbell row
  * equipment : barbell
  * exercise_cd : 'BBR'
  * muscle hit : mid back (8), lats (5), biceps (4)
  * type : 'weight'
- * group : 'horizontal pull'
+ * group : 'upper pull'
  * 11. dips
  * equipment : dip bar
  * muscle hit : triceps (6), chest (7)
@@ -455,13 +897,13 @@ model workout_per_week_workout {
  * muscle hit : lats (7),
  * exercise_cd : 'DPL'
  * type : 'weight'
- * group : 'vertical pull'
+ * group : 'upper pull'
  * 13. tuck front lever
  * equipment : pull up bar
  * muscle hit : lats (8)
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 4
  * level : 1
  * 13. half tuck front lever
@@ -470,7 +912,7 @@ model workout_per_week_workout {
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 2
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 6
  * 13. full front lever
  * equipment : pull up bar
@@ -478,7 +920,7 @@ model workout_per_week_workout {
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 3
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 7
  * 14. static tuck front lever
  * equipment : dip bar
@@ -486,7 +928,7 @@ model workout_per_week_workout {
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 1
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 4
  * 14. static half tuck front lever
  * equipment : dip bar
@@ -494,7 +936,7 @@ model workout_per_week_workout {
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 2
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 5
  * 14. static full front lever
  * equipment : dip bar
@@ -502,10 +944,10 @@ model workout_per_week_workout {
  * exercise_cd : 'PUFL'
  * type : 'bodyweight'
  * level : 3
- * group : 'vertical pull'
+ * group : 'upper pull'
  * difficulty : 7
  * 15. isometric deadlift
- * equipment : dip bar
+ * equipment : bar, and strap
  * muscle hit : quads (7), hamstring (5), mid back (3)
  * exercise_cd : 'IDL'
  * type : 'isometric'
@@ -526,30 +968,33 @@ model workout_per_week_workout {
  * level : 2
  * group : 'bicep'
  * difficulty : 6
- * 16. Dumbell Romanian Deadlift
- * equipment : light dumbell
+ * 16. Dumbell Romanian Deadlift (6-12)
+ * equipment : dumbell (10kg)
  * muscle hit : hamstring (10)
  * exercise_cd : 'DRDL'
  * type : 'weight'
  * level : 1
  * group : 'leg pull'
  * difficulty : 1
- * 16. Dumbell Romanian Deadlift
- * equipment : medium dumbell
+ * max_rep : 12
+ * 16. Dumbell Romanian Deadlift (6-12)
+ * equipment : dumbell (15kg)
  * muscle hit : hamstring (10)
  * exercise_cd : 'DRDL'
  * type : 'weight'
  * level : 2
  * group : 'leg pull'
- * difficulty : 4
- * 16. Dumbell Romanian Deadlift
- * equipment : heavy dumbell
+ * difficulty : 2
+ * max_rep : 12
+ * 16. Dumbell Romanian Deadlift (6-12)
+ * equipment : dumbell (20kg)
  * muscle hit : hamstring (10)
  * exercise_cd : 'DRDL'
  * type : 'weight'
  * level : 3
  * group : 'leg pull'
- * difficulty : 7
+ * difficulty : 3
+ * max_rep : 12
  * 17. Unilateral Dumbell Romanian Deadlift
  * equipment : light dumbell
  * muscle hit : hamstring (10)
@@ -574,14 +1019,105 @@ model workout_per_week_workout {
  * level : 3
  * group : 'leg pull'
  * difficulty : 10
- * 17. Barbell Dumbell Romanian Deadlift
- * equipment : barbell
+ * 18. Barbell Dumbell Romanian Deadlift (4-8)
+ * equipment : barbell (20 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 1
+ * max_rep : 8
+ * 18. Barbell Dumbell Romanian Deadlift (8-12)
+ * equipment : barbell (20 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 2
+ * max_rep : 12
+ * 18. Barbell Dumbell Romanian Deadlift (12-20)
+ * equipment : barbell (20 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 3
+ * max_rep : 20
+ * 18. Barbell Dumbell Romanian Deadlift (4-8)
+ * equipment : barbell (40 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 4
+ * max_rep : 8
+ * 18. Barbell Dumbell Romanian Deadlift (8-12)
+ * equipment : barbell (40 kg)
  * muscle hit : hamstring (10)
  * exercise_cd : 'RDL'
  * type : 'weight'
  * level : 1
  * group : 'leg pull'
  * difficulty : 5
+ * max_rep : 12
+ * 18. Barbell Dumbell Romanian Deadlift (4-8)
+ * equipment : barbell (60 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 6
+ * max_rep : 8
+ * 18. Barbell Dumbell Romanian Deadlift (8-12)
+ * equipment : barbell (60 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 7
+ * max_rep : 12
+ * 18. Barbell Dumbell Romanian Deadlift (4-8)
+ * equipment : barbell (80 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 8
+ * max_rep : 8
+ * 18. Barbell Dumbell Romanian Deadlift (8-12)
+ * equipment : barbell (60 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 9
+ * max_rep : 12
+ * 18. Barbell Dumbell Romanian Deadlift (4-8)
+ * equipment : barbell (100 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 10
+ * max_rep : 8
+ * 18. Barbell Dumbell Romanian Deadlift (8-12)
+ * equipment : barbell (100 kg)
+ * muscle hit : hamstring (10)
+ * exercise_cd : 'RDL'
+ * type : 'weight'
+ * level : 1
+ * group : 'leg pull'
+ * difficulty : 11
+ * max_rep : 12
  */
 
 // make a function that'll take the user's id, then take in their equipments, days_available and minutes_available then generate a workout plan with these requirements :

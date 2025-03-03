@@ -1018,88 +1018,83 @@ export class WorkoutService {
     }
 
     async createProgress(progressInput: {
-        user_id: number;
-        workout_id: number;
-        date: Date;
-        exercises: {
-          workout_exercise_id: number;
-          sets: number;
-          reps: number;
-          weight_used?: number;
-          level_done?: number;
-        }[];
-      }) {
-        const { user_id, workout_id, date, exercises } = progressInput;
-      
-        // Create a workout_progress record with nested exercise_progress entries.
-        const newProgress = await this.databaseService.workout_progress.create({
-          data: {
-            user_id,
-            workout_id,
-            date,
-            exerciseProgress: {
-              create: exercises.map((ex) => ({
-                workout_exercise_id: ex.workout_exercise_id,
-                sets: ex.sets,
-                reps: ex.reps,
-                weight_used: ex.weight_used ?? null,
-                level_done: ex.level_done ?? null,
-              })),
-            },
+      user_id: number;
+      workout_id: number;
+      date: Date;
+      exercises: {
+        workout_exercise_id: number;
+        sets: number;
+        reps: number;
+        weight_used?: number;
+        level_done?: number;
+      }[];
+    }) {
+      const { user_id, workout_id, date, exercises } = progressInput;
+    
+      // Create a workout_progress record with nested exercise_progress entries.
+      const newProgress = await this.databaseService.workout_progress.create({
+        data: {
+          user_id,
+          workout_id,
+          date,
+          exerciseProgress: {
+            create: exercises.map((ex) => ({
+              workout_exercise_id: ex.workout_exercise_id,
+              sets: ex.sets,
+              reps: ex.reps,
+              weight_used: ex.weight_used ?? null,
+              level_done: ex.level_done ?? null,
+            })),
           },
-          include: {
-            exerciseProgress: true,
+        },
+        include: {
+          exerciseProgress: true,
+        },
+      });
+    
+      // For each exercise progress submitted, update the user's level if needed.
+      for (const exProgress of exercises) {
+        // Retrieve the workout_exercise to get the associated exercise details.
+        const we = await this.databaseService.workout_exercise.findUnique({
+          where: { id: exProgress.workout_exercise_id },
+          include: { 
+            exercise: {
+              include: { 
+                group: true  // Retrieves associated excercise_group entries.
+              } 
+            } 
           },
         });
-      
-        // For each exercise progress submitted, update the user's level if needed.
-        for (const exProgress of exercises) {
-          // Retrieve the workout_exercise to get the associated exercise details.
-          const we = await this.databaseService.workout_exercise.findUnique({
-            where: { id: exProgress.workout_exercise_id },
-            include: { 
-              exercise: {
-                include: { 
-                  group: true  // Retrieves associated excercise_group entries.
-                } 
-              } 
-            },
-          });
-      
-          if (!we) continue;
-      
-          const exercise = we.exercise;
-          // Only consider bodyweight exercises for leveling up.
-          if (exercise.types.toLowerCase() !== 'bodyweight') continue;
-      
-          // Determine the threshold based on intensity.
-          const intensity = exercise.intensity.toLowerCase();
-          let threshold: number;
-          if (intensity === 'low') threshold = 15;
-          else if (intensity === 'medium') threshold = 12;
-          else if (intensity === 'high') threshold = 8;
-          else if (intensity === 'very high' || intensity === 'very_high') threshold = 6;
-          else threshold = Infinity;
-      
-          // If performed reps exceed the threshold, level up the user in that exercise's group.
-          if (exProgress.reps > threshold) {
-            // Ensure the exercise has an associated group.
-            if (exercise.group && exercise.group.length > 0) {
-              // We'll take the first group.
-              const groupId = exercise.group[0].group_id;
-              // Update the user's group level: increment level by 1.
-              await this.databaseService.user_group_level.update({
-                where: { 
-                  user_id_group_id: { user_id, group_id: groupId } 
-                },
-                data: { level: { increment: 1 } },
-              });
-            }
+    
+        if (!we) continue;
+    
+        const exercise = we.exercise;
+        // Only consider bodyweight exercises for leveling up.
+        if (exercise.types.toLowerCase() !== 'bodyweight') continue;
+    
+        // Use the max_rep value from the exercise (or Infinity if not set).
+        const maxRep = exercise.max_rep || Infinity;
+    
+        // If the user performed more reps than max_rep, level up the user in that exercise's group.
+        if (exProgress.reps > maxRep) {
+          // Ensure the exercise has an associated group.
+          if (exercise.group && exercise.group.length > 0) {
+            // We'll take the first group.
+            const groupId = exercise.group[0].group_id;
+            // Update the user's group level: increment level by 1.
+            await this.databaseService.user_group_level.update({
+              where: { 
+                user_id_group_id: { user_id, group_id: groupId } 
+              },
+              data: { level: { increment: 1 } },
+            });
           }
         }
-      
-        return newProgress;
       }
+    
+      return newProgress;
+    }
+    
       
 
     async getWorkoutForToday(userId: number): Promise<any> {
@@ -1213,6 +1208,121 @@ export class WorkoutService {
 
         return formatted;
     }
+
+    async getUserWorkouts(userId: number): Promise<any> {
+      // Retrieve the workoutperweek records for the user, including nested workouts.
+      const wpwRecords = await this.databaseService.workoutperweek.findMany({
+        where: { user_id: userId },
+        include: {
+          workouts: {
+            include: {
+              workout: {
+                include: {
+                  exercises: {
+                    include: {
+                      exercise: true, // basic exercise info (name, duration, intensity)
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+  
+      // Flatten workouts from all workoutperweek records.
+      let workouts = [];
+      wpwRecords.forEach((wpw) => {
+        wpw.workouts.forEach((wEntry) => {
+          workouts.push(wEntry.workout);
+        });
+      });
+      if (workouts.length === 0)
+        throw new NotFoundException(`No workouts found for user with id ${userId}`);
+        
+      // Sort workouts by date ascending.
+      workouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+      // Map workouts to desired format.
+      const formattedWorkouts = workouts.map((workout) => {
+        const exercisesArr = workout.exercises.map((we) => {
+          const ex = we.exercise;
+          const duration = ex.duration || 0;
+          const restTime = duration ? this.getRestTime(ex.intensity) : 0;
+          return {
+            workout_exercise_id: we.id,
+            name: ex.name,
+            duration: duration,
+            restTime: restTime,
+          };
+        });
+        return {
+          workout_id: workout.id,
+          date: workout.date,
+          exercises: exercisesArr,
+        };
+      });
+  
+      return formattedWorkouts;
+    }
+
+    async getWorkoutById(workoutId: number): Promise<any> {
+      const workout = await this.databaseService.workout.findUnique({
+        where: { id: workoutId },
+        include: {
+          exercises: {
+            include: {
+              exercise: {
+                include: {
+                  muscles: { include: { muscle: true } },
+                  equipments: { include: { equipment: true } },  // <--- Include nested equipment
+                  group: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!workout)
+        throw new NotFoundException(`Workout with id ${workoutId} not found`);
+    
+      // Format the workout date.
+      const formattedDate = moment(workout.date).format('dddd, Do MMMM YYYY');
+    
+      // Map each workout_exercise to detailed information.
+      const exercisesDetailed = workout.exercises.map((we) => {
+        const ex = we.exercise;
+        const duration = ex.duration || 0;
+        const restTime = duration ? this.getRestTime(ex.intensity) : 0;
+        const groupInfo = ex.group?.map((g) => ({
+          group_id: g.group_id,
+          difficulty: g.difficulty || null,
+        })) || [];
+        const musclesHit = ex.muscles.map((em) => ({
+          name: em.muscle.name,
+          rating: em.rating,
+        }));
+        // Now, map equipments using the nested 'equipment' relation.
+        const equipmentsRequired = ex.equipments.map((eq) => eq.equipment.name);
+      
+        return {
+          workout_exercise_id: we.id,
+          name: ex.name,
+          duration: duration,
+          restTime: restTime,
+          groupInfo,
+          musclesHit,
+          equipmentsRequired,
+        };
+      });
+    
+      return {
+        workout_id: workout.id,
+        date: formattedDate,
+        exercises: exercisesDetailed,
+      };
+    }
+    
 
     private getRestTime(intensity: string): number {
         switch (intensity.toLowerCase()) {

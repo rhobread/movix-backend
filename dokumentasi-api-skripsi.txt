@@ -372,3 +372,298 @@ example output :
         "muscleScores": {}
     }
 ]
+
+GET
+workout/user/:user_id (ganti sama id usernya)
+example output :
+[
+    {
+        "workout_id": 15,
+        "date": "2025-02-28T07:53:31.036Z",
+        "exercises": []
+    },
+    {
+        "workout_id": 18,
+        "date": "2025-02-28T08:03:59.100Z",
+        "exercises": [
+            {
+                "workout_exercise_id": 50,
+                "name": "Side lateral raise",
+                "duration": 2,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 51,
+                "name": "reverse lunge",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 52,
+                "name": "bodyweight row",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 53,
+                "name": "dips",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 54,
+                "name": "static tuck front lever",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 55,
+                "name": "dumbell bicep curl",
+                "duration": 2,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 56,
+                "name": "bodyweight tricep extension",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 57,
+                "name": "Push up",
+                "duration": 2,
+                "restTime": 2
+            }
+        ]
+    },
+    {
+        "workout_id": 16,
+        "date": "2025-03-03T08:03:59.099Z",
+        "exercises": [
+            {
+                "workout_exercise_id": 37,
+                "name": "bodyweight row",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 38,
+                "name": "Push up",
+                "duration": 2,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 39,
+                "name": "Side lateral raise",
+                "duration": 2,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 40,
+                "name": "reverse lunge",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 41,
+                "name": "dumbell bicep curl",
+                "duration": 2,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 42,
+                "name": "bodyweight tricep extension",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 43,
+                "name": "static tuck front lever",
+                "duration": 3,
+                "restTime": 2
+            }
+        ]
+    },
+    {
+        "workout_id": 17,
+        "date": "2025-03-05T08:03:59.100Z",
+        "exercises": [
+            {
+                "workout_exercise_id": 44,
+                "name": "dips",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 45,
+                "name": "bodyweight row",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 46,
+                "name": "Side lateral raise",
+                "duration": 2,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 47,
+                "name": "reverse lunge",
+                "duration": 3,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 48,
+                "name": "dumbell bicep curl",
+                "duration": 2,
+                "restTime": 2
+            },
+            {
+                "workout_exercise_id": 49,
+                "name": "Push up",
+                "duration": 2,
+                "restTime": 2
+            }
+        ]
+    }
+]
+
+GET
+workout/detail/:workout_id (ganti id workoutnya, dari output yg di atas tuh ada workout_id)
+example output :
+{
+    "workout_id": 17,
+    "date": "Wednesday, 5th March 2025",
+    "exercises": [
+        {
+            "workout_exercise_id": 44,
+            "name": "dips",
+            "duration": 3,
+            "restTime": 2,
+            "groupInfo": [
+                {
+                    "group_id": 8,
+                    "difficulty": 1
+                }
+            ],
+            "musclesHit": [
+                {
+                    "name": "triceps",
+                    "rating": 6
+                },
+                {
+                    "name": "chest",
+                    "rating": 7
+                }
+            ],
+            "equipmentsRequired": [
+                "dip bar"
+            ]
+        },
+        {
+            "workout_exercise_id": 45,
+            "name": "bodyweight row",
+            "duration": 3,
+            "restTime": 2,
+            "groupInfo": [
+                {
+                    "group_id": 5,
+                    "difficulty": 1
+                }
+            ],
+            "musclesHit": [
+                {
+                    "name": "mid back",
+                    "rating": 8
+                },
+                {
+                    "name": "lats",
+                    "rating": 5
+                },
+                {
+                    "name": "biceps",
+                    "rating": 4
+                }
+            ],
+            "equipmentsRequired": [
+                "dip bar"
+            ]
+        },
+        {
+            "workout_exercise_id": 46,
+            "name": "Side lateral raise",
+            "duration": 2,
+            "restTime": 2,
+            "groupInfo": [],
+            "musclesHit": [
+                {
+                    "name": "side delts",
+                    "rating": 10
+                }
+            ],
+            "equipmentsRequired": [
+                "light dumbell (5-20kg)"
+            ]
+        },
+        {
+            "workout_exercise_id": 47,
+            "name": "reverse lunge",
+            "duration": 3,
+            "restTime": 2,
+            "groupInfo": [
+                {
+                    "group_id": 1,
+                    "difficulty": null
+                }
+            ],
+            "musclesHit": [
+                {
+                    "name": "quads",
+                    "rating": 10
+                }
+            ],
+            "equipmentsRequired": [
+                "medium dumbell (20-50kg)"
+            ]
+        },
+        {
+            "workout_exercise_id": 48,
+            "name": "dumbell bicep curl",
+            "duration": 2,
+            "restTime": 2,
+            "groupInfo": [],
+            "musclesHit": [
+                {
+                    "name": "biceps",
+                    "rating": 7
+                }
+            ],
+            "equipmentsRequired": [
+                "light dumbell (5-20kg)"
+            ]
+        },
+        {
+            "workout_exercise_id": 49,
+            "name": "Push up",
+            "duration": 2,
+            "restTime": 2,
+            "groupInfo": [
+                {
+                    "group_id": 4,
+                    "difficulty": 3
+                }
+            ],
+            "musclesHit": [
+                {
+                    "name": "chest",
+                    "rating": 8
+                },
+                {
+                    "name": "triceps",
+                    "rating": 5
+                }
+            ],
+            "equipmentsRequired": []
+        }
+    ]
+}

@@ -75,7 +75,7 @@ export class UserService {
   
     // Update (or create) the user's group levels for all 8 groups.
     // Ensure your user_group_level model has a composite unique constraint on (user_id, group_id).
-    for (let groupId = 1; groupId <= 8; groupId++) {
+    for (let groupId = 1; groupId <= 7; groupId++) {
       await this.prisma.user_group_level.upsert({
         where: { user_id_group_id: { user_id: userId, group_id: groupId } },
         update: { level: newLevel },
