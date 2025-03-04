@@ -15,7 +15,7 @@ export class UserService {
         email:input.email
       }
     })
-    if (!existingUser || !existingUser.email ){
+    if (existingUser){
       throw new BadRequestException({
         statusCode : 400,
         message: 'user with this Email already exists',
