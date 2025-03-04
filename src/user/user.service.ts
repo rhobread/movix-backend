@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 
 
@@ -9,6 +9,18 @@ export class UserService {
   // 1. Create a new user (input: email, name, password)
   //    Also, assign default level 1 for all 8 groups.
   async createUser(input: { email: string; name: string; password: string }): Promise<any> {
+    const existingUser = await this.prisma.users.findFirst({
+      where:{
+        email:input.email
+      }
+    })
+    if (existingUser || existingUser.email ){
+      throw new BadRequestException({
+        statusCode : 400,
+        message: 'user with this Email already exists',
+        data: []
+      })
+    }
     const user = await this.prisma.users.create({
       data: {
         email: input.email,

@@ -100,7 +100,6 @@ export class EquipmentService {
               // Determine difficulty if available. For bodyweight, use first group if exists.
               let difficulty: number | null = null;
               if (
-                exercise.types.toLowerCase() === 'bodyweight' &&
                 exercise.group &&
                 exercise.group.length > 0
               ) {

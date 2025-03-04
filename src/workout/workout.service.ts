@@ -17,7 +17,7 @@ interface ExtendedExercise {
     types: string;
     muscles: any[];
     equipments: any[];
-    group?: { id: number; difficulty?: number }[]; // excercise_group entries
+    group?: { id: number; difficulty?: number; group_id: number }[]; // excercise_group entries
   }
   
 @Injectable()
@@ -112,8 +112,6 @@ export class WorkoutService {
     }
 
 
-    
-
     async makeWorkoutPlanForUser(userId: number) {
       // 1. Fetch the user with their equipments, availabilities, and group levels.
       const user = await this.databaseService.users.findUnique({
@@ -130,7 +128,7 @@ export class WorkoutService {
           message: "User with this id doesn't exist",
           data: [],
         });
-  
+    
       // Create a mapping for user's group level.
       const userGroupLevels: Record<number, number> = {};
       if (user.level) {
@@ -138,10 +136,11 @@ export class WorkoutService {
           userGroupLevels[ugl.group_id] = ugl.level;
         });
       }
-  
+      console.log(userGroupLevels)
+    
       // Convert user's equipments into an array of equipment IDs.
       const userEquipmentIds = user.equipments.map((ue) => ue.equipment_id);
-  
+    
       // Mapping from day name to day number.
       const dayNameToNumber: Record<string, number> = {
         sunday: 0,
@@ -152,7 +151,7 @@ export class WorkoutService {
         friday: 5,
         saturday: 6,
       };
-  
+    
       // Convert availabilities into arrays of day numbers and minutes.
       const daysAvailable: number[] = [];
       const minutesAvailable: number[] = [];
@@ -163,7 +162,7 @@ export class WorkoutService {
           minutesAvailable.push(av.minutes);
         }
       });
-  
+    
       // *** NEW: Delete all workouts for the user from tomorrow until 7 days later ***
       const tomorrow = moment().add(1, 'days').startOf('day').toDate();
       const sevenDaysLater = moment().add(7, 'days').endOf('day').toDate();
@@ -186,7 +185,7 @@ export class WorkoutService {
           where: { id: { in: workoutIds } },
         });
       }
-  
+    
       // 2. Fetch all exercises with related muscles, equipments, and group data.
       const exercises = await this.databaseService.exercise.findMany({
         include: {
@@ -195,7 +194,7 @@ export class WorkoutService {
           group: true, // returns array of excercise_group entries
         },
       });
-  
+    
       // 3. Filter exercises based on user's available equipments.
       const filteredExercises = exercises.filter((ex) => {
         if (ex.equipments.length === 0) return true;
@@ -204,7 +203,7 @@ export class WorkoutService {
             eq.equipment_id === null || userEquipmentIds.includes(eq.equipment_id)
         );
       });
-  
+    
       // 4. Group exercises by exercise_cd.
       const exercisesByCd: Record<string, ExtendedExercise[]> = {};
       filteredExercises.forEach((ex: ExtendedExercise) => {
@@ -213,35 +212,41 @@ export class WorkoutService {
         }
         exercisesByCd[ex.exercise_cd].push(ex);
       });
-  
-      // 5. For each exercise_cd, select one exercise variant.
-      const selectedExercises: ExtendedExercise[] = [];
+    
+      // 5. Build a flattened list of valid variants.
+      let allValidVariants: ExtendedExercise[] = [];
       for (const cd in exercisesByCd) {
         const variants = exercisesByCd[cd];
-        if (
-          variants[0].types.toLowerCase() === 'bodyweight' &&
-          variants[0].group &&
-          variants[0].group.length > 0
-        ) {
-          const groupId = variants[0].group[0].id;
-          const userLevel = userGroupLevels[groupId] || 0;
-          const validVariants = variants.filter((v) => {
-            if (!v.group || v.group.length === 0 || v.group[0].difficulty == null)
-              return false;
-            return v.group[0].difficulty <= userLevel;
-          });
-          if (validVariants.length > 0) {
-            validVariants.sort((a, b) => b.group[0].difficulty - a.group[0].difficulty);
-            selectedExercises.push(validVariants[0]);
-          } else {
-            variants.sort((a, b) => a.group[0].difficulty - b.group[0].difficulty);
-            selectedExercises.push(variants[0]);
+        // If exercise has group info, filter by valid ones (difficulty <= user's level)
+        let validVariants = variants.filter((v) => {
+          if (v.group && v.group.length > 0) {
+            const groupId = v.group[0].group_id;
+            console.log(groupId)
+            const userLevel = userGroupLevels[groupId] || 0;
+            return v.group[0].difficulty !== null && v.group[0].difficulty <= userLevel;
           }
-        } else {
-          selectedExercises.push(variants[0]);
+          return true; // if no group info, it's valid.
+        });
+        if (validVariants.length === 0) {
+          // If none pass the filter, fallback to all variants.
+          validVariants = variants;
         }
+        // Sort variants descending by difficulty (if group info exists).
+        validVariants.sort((a, b) => {
+          const diffA = a.group && a.group.length > 0 ? a.group[0].difficulty || 0 : 0;
+          const diffB = b.group && b.group.length > 0 ? b.group[0].difficulty || 0 : 0;
+          return diffB - diffA;
+        });
+        // Push all valid variants for this exercise_cd.
+        allValidVariants.push(...validVariants);
       }
-  
+      // Sort the complete list by descending difficulty.
+      allValidVariants.sort((a, b) => {
+        const diffA = a.group && a.group.length > 0 ? a.group[0].difficulty || 0 : 0;
+        const diffB = b.group && b.group.length > 0 ? b.group[0].difficulty || 0 : 0;
+        return diffB - diffA;
+      });
+    
       // 6. Helper: Calculate rest time based on intensity.
       const getRestTime = (intensity: string): number => {
         switch (intensity.toLowerCase()) {
@@ -253,14 +258,14 @@ export class WorkoutService {
           default: return 0;
         }
       };
-  
-      // 7. Annotate each selected exercise with meta-data: points and totalTime per set.
-      const exercisesWithMeta = selectedExercises.map((ex) => {
+    
+      // 7. Annotate each valid variant with meta-data: points and totalTime per set.
+      const exercisesWithMeta = allValidVariants.map((ex) => {
         const points = ex.muscles.reduce((sum, em) => sum + em.rating, 0);
-        const totalTime = ex.duration + getRestTime(ex.intensity);
+        const totalTime = (ex.duration || 0) + getRestTime(ex.intensity);
         return { ...ex, points, totalTime };
       });
-  
+    
       // 8. Build weekly workout plans using overall (global) muscle balance.
       const workoutsPlan = [];
       const marginMultiplier = 1.2; // up to 20% over nominal minutes
@@ -268,7 +273,7 @@ export class WorkoutService {
       const allMuscleNames = (await this.databaseService.muscle.findMany()).map((m) => m.name);
       allMuscleNames.forEach((name) => (globalMusclePoints[name] = 0));
       const overallExerciseSetCount: Record<number, number> = {};
-  
+    
       for (let i = 0; i < daysAvailable.length; i++) {
         const nominalTime = minutesAvailable[i];
         const timeLimit = nominalTime * marginMultiplier;
@@ -282,7 +287,7 @@ export class WorkoutService {
           const min = Math.min(...values);
           return (max - min) / avg;
         };
-  
+    
         while (usedTime < timeLimit) {
           const candidates = exercisesWithMeta.filter(
             (ex) => ex.totalTime <= timeLimit - usedTime
@@ -355,14 +360,14 @@ export class WorkoutService {
           totalUsedTime: usedTime,
         });
       }
-  
+    
       // 9. Dummy load calculation: for weight, constant; for bodyweight, use the selected exercise's level.
       const calculateLoad = (exercise: any) => {
         if (exercise.types === 'weight') return { weight: 10 };
-        if (exercise.types === 'bodyweight') return { level: exercise.level };
+        if (exercise.types === 'bodyweight') return { level: exercise.group && exercise.group.length > 0 ? exercise.group[0].difficulty : null };
         return {};
       };
-  
+    
       // 10. Save the weekly workout plan into the database.
       const savedWorkouts = [];
       for (const plan of workoutsPlan) {
@@ -383,7 +388,7 @@ export class WorkoutService {
         }
         savedWorkouts.push(workoutRecord);
       }
-  
+    
       // 11. Create a workoutperweek record and associate all saved workouts.
       const workoutPerWeekRecord = await this.databaseService.workoutperweek.create({
         data: { user_id: userId },
@@ -398,6 +403,7 @@ export class WorkoutService {
       }
       return workoutPerWeekRecord;
     }
+    
 
     // async generateWorkoutPlanForUser(userId: number) {
     //     // 1. Fetch the user along with their equipments and availabilities.
@@ -983,7 +989,13 @@ export class WorkoutService {
                 include: {
                   exercises: {
                     include: {
-                      exercise: true, // basic exercise info (name, duration, intensity)
+                      exercise: {
+                        include: {
+                          muscles: { include: { muscle: true } },
+                          group: { include: { group: true } },
+                          equipments : true
+                        },
+                      },
                     },
                   },
                 },
@@ -992,7 +1004,7 @@ export class WorkoutService {
           },
         },
       });
-  
+    
       // Flatten workouts from all workoutperweek records.
       let workouts = [];
       wpwRecords.forEach((wpw) => {
@@ -1002,31 +1014,66 @@ export class WorkoutService {
       });
       if (workouts.length === 0)
         throw new NotFoundException(`No workouts found for user with id ${userId}`);
-        
+    
       // Sort workouts by date ascending.
       workouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
-      // Map workouts to desired format.
-      const formattedWorkouts = workouts.map((workout) => {
-        const exercisesArr = workout.exercises.map((we) => {
+    
+      const formattedWorkouts = [];
+      const musclePoints: Record<string, number> = {};
+    
+      for (const workout of workouts) {
+        // Format the workout date using Moment.js.
+        const formattedDate = moment(workout.date).format('dddd, Do MMMM YYYY');
+        const exercisesArr = [];
+        let dayTotalDuration = 0;
+    
+        // Iterate over each workout_exercise record.
+        for (const we of workout.exercises) {
           const ex = we.exercise;
           const duration = ex.duration || 0;
           const restTime = duration ? this.getRestTime(ex.intensity) : 0;
-          return {
+          const totalDuration = (duration + restTime) * we.set;
+          dayTotalDuration += totalDuration;
+    
+          // Retrieve muscles hit.
+          const musclesHit = ex.muscles.map((em: any) => {
+            const mName = em.muscle.name;
+            musclePoints[mName] = (musclePoints[mName] || 0) + (we.set * em.rating);
+            return mName;
+          });
+    
+          // Get group info from the first excercise_group record if available.
+          let groupInfo = null;
+          if (ex.group && ex.group.length > 0 && ex.group[0].group) {
+            groupInfo = {
+              name: ex.group[0].group.name,
+              difficulty: ex.group[0].difficulty || null,
+            };
+          }
+    
+          exercisesArr.push({
             workout_exercise_id: we.id,
             name: ex.name,
-            duration: duration,
-            restTime: restTime,
-          };
-        });
-        return {
-          workout_id: workout.id,
-          date: workout.date,
+            sets: we.set,
+            reps: we.reps,
+            weight: we.weight,
+            totalDuration: totalDuration,
+            musclesHit: musclesHit,
+            group: groupInfo,
+          });
+        }
+    
+        formattedWorkouts.push({
+          date: formattedDate,
           exercises: exercisesArr,
-        };
-      });
-  
-      return formattedWorkouts;
+          totalWorkoutDuration: dayTotalDuration,
+        });
+      }
+    
+      return {
+        workouts: formattedWorkouts,
+        musclePoints: musclePoints,
+      };
     }
 
     async getWorkoutById(workoutId: number): Promise<any> {

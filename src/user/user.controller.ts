@@ -66,7 +66,7 @@ export class UserController {
   }
 
   // 3. Add equipments to a user (input: array of equipment IDs)
-  @Post('equipments/:id')
+  @Put('equipments/:id')
   async addEquipments(
     @Param('id') id: string,
     @Body() body: { equipmentIds: number[] },
