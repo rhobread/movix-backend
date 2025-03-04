@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -7,6 +7,7 @@ export class UserController {
 
   // 1. Create a new user (input: email, name, password)
   @Post('register')
+  @HttpCode(200)
   async createUser(
     @Body() body: { email: string; name: string; password: string },
   ) {
@@ -20,6 +21,7 @@ export class UserController {
 
   // 2. Update user's height and weight
   @Post('measurements/:id')
+  @HttpCode(200)
   async insertMeasurements(
     @Param('id') id: string,
     @Body() body: { height: number; weight: number },
@@ -35,6 +37,7 @@ export class UserController {
     };
   }
   @Post('measurements/:id')
+  @HttpCode(200)
   async addMeasurements(
     @Param('id') id: string,
     @Body() body: { height: number; weight: number },

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Put } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 
 @Controller('workout')
@@ -51,11 +51,13 @@ export class WorkoutController {
   // }
 
   @Post('generate/:user_id')
+  @HttpCode(200)
   async generateWorkout(@Param('user_id') user_id: string) {
     return await this.workoutService.makeWorkoutPlanForUser(+user_id)
   }
 
   @Post('create')
+  @HttpCode(200)
   async createProgress(@Body() progressInput: {
     user_id: number;
     workout_id: number;
