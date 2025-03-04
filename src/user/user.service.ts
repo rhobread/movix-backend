@@ -9,12 +9,13 @@ export class UserService {
   // 1. Create a new user (input: email, name, password)
   //    Also, assign default level 1 for all 8 groups.
   async createUser(input: { email: string; name: string; password: string }): Promise<any> {
+    console.log(input)
     const existingUser = await this.prisma.users.findFirst({
       where:{
         email:input.email
       }
     })
-    if (existingUser || existingUser.email ){
+    if (!existingUser || !existingUser.email ){
       throw new BadRequestException({
         statusCode : 400,
         message: 'user with this Email already exists',
