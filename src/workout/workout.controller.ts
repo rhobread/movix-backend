@@ -55,6 +55,11 @@ export class WorkoutController {
   async generateWorkout(@Param('user_id') user_id: string) {
     return await this.workoutService.makeWorkoutPlanForUser(+user_id)
   }
+  @Post('generate-v2/:user_id')
+  @HttpCode(200)
+  async generateWorkoutV2(@Param('user_id') user_id: string) {
+    return await this.workoutService.generateWorkoutPlan(+user_id)
+  }
 
   @Post('create')
   @HttpCode(200)
