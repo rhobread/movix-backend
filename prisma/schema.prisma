@@ -252,6 +252,27 @@ model workout_per_week_workout {
  * 7. bicep
  * 8. tricep
  * excersise :
+ * 1. chair pull up (3-6)
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * group : 'upper pull'
+ * difficulty : 1
+ * max_rep : 6
+ * 1. chair pull up (6-12)
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * group : 'upper pull'
+ * difficulty : 2
+ * max_rep : 12
+ * 1. negative pull up (4-8)
+ * muscle hit : lats (7), biceps (4), mid back (5)
+ * exercise_cd : 'PLU'
+ * type : 'bodyweight'
+ * group : 'upper pull'
+ * difficulty : 3
+ * max_rep : 8
  * 1. Pull up (3-6)
  * equipment : pull up bar,
  * muscle hit : lats (7), biceps (4), mid back (5)

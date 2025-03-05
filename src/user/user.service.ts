@@ -101,6 +101,11 @@ export class UserService {
 
   // 3. Add equipments to a user (input: array of equipment IDs)
   async addUserEquipments(userId: number, equipmentIds: number[]): Promise<any> {
+    await this.prisma.user_equipment.deleteMany({
+      where: {
+        user_id: userId,
+      },
+    });
     const data = equipmentIds.map(equipId => ({
       user_id: userId,
       equipment_id: equipId,
