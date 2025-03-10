@@ -920,8 +920,8 @@ export class WorkoutService {
       exercises: {
         workout_exercise_id: number;
         name: string;
-        sets: { set_number: number; reps: number }[];
-        weight_used?: number;
+        sets: { set_number: number; reps: number; weight_used?:number }[];
+        // weight_used?: number[];
       }[];
     }): Promise<any> {
       const { user_id, workout_id, date, exercises } = progressInput;
@@ -941,7 +941,7 @@ export class WorkoutService {
                   workout_exercise_id: ex.workout_exercise_id,
                   sets: setItem.set_number, // use the set_number to indicate the nth set
                   reps: setItem.reps,
-                  weight_used: ex.weight_used ?? null,
+                  weight_used: setItem.weight_used ?? null,
                 }))
             ),
           },
@@ -990,6 +990,15 @@ export class WorkoutService {
           }
         }
       }
+
+      await this.databaseService.workout.updateMany({
+        data:{
+          status: 'done'
+        },
+        where :{
+          id:workout_id
+        }
+      })
     
       return newProgress;
     }
@@ -1041,6 +1050,7 @@ export class WorkoutService {
         // Format the workout_exercise records for the response.
         const formattedExercises = workoutToday.exercises.map(we => ({
           workout_exercise_id: we.id,
+          exercise_cd:we.exercise.exercise_cd,
           name: we.exercise.name,
           sets: we.set,
           // These values are to be filled in by the user after doing the workout:
@@ -1056,61 +1066,109 @@ export class WorkoutService {
         };
       }
 
-    async getProgressByUser(userId: number) {
+      async getProgressByUser(userId: number): Promise<any> {
         const progressRecords = await this.databaseService.workout_progress.findMany({
-            where: { user_id: userId },
-            include: {
-                workout: true,
-                exerciseProgress: {
-                    include: {
-                        workout_exercise: {
-                            include: {
-                                exercise: {
-                                    include: {
-                                        muscles: {
-                                            include: { muscle: true },
-                                        },
-                                    },
-                                },
-                            },
+          where: { user_id: userId },
+          include: {
+            workout: true,
+            exerciseProgress: {
+              include: {
+                workout_exercise: {
+                  include: {
+                    exercise: {
+                      include: {
+                        muscles: {
+                          include: {
+                            muscle: true,
+                          },
                         },
+                        // If needed, include group info as well:
+                        group: { include: { group: true } },
+                      },
                     },
+                  },
                 },
+              },
             },
-            orderBy: {
-                date: 'desc',
-            },
+          },
+          orderBy: {
+            date: 'desc',
+          },
         });
-
+      
         // Format the output.
         const formatted = progressRecords.map((wp) => {
-            // Format the date (e.g., "Monday, 2nd February 2025")
-            const formattedDate = moment(wp.date).format('dddd, Do MMMM YYYY');
-            // Map each exercise progress entry.
-            const exercises = wp.exerciseProgress.map((ep) => {
-                const exercise = ep.workout_exercise.exercise;
-                // Extract muscle names from exercise.muscles.
-                const musclesHit = exercise.muscles.map((em) => em.muscle.name);
-                return {
-                    name: exercise.name,
-                    sets: ep.sets,
-                    reps: ep.reps,
-                    weight_used: ep.weight_used,
-                    musclesHit,
-                    totalDuration: (exercise.duration + this.getRestTime(exercise.intensity)) * ep.sets,
-                };
+          // Format the date (e.g., "Monday, 2nd February 2025")
+          const formattedDate = moment(wp.date).format('dddd, Do MMMM YYYY');
+          
+          // Group exerciseProgress by workout_exercise_id.
+          const groupMap = new Map<number, {
+            exercise: any;
+            records: { set: number; reps: number; weight_used: number | null }[];
+          }>();
+      
+          wp.exerciseProgress.forEach((ep) => {
+            const weId = ep.workout_exercise_id;
+            if (!groupMap.has(weId)) {
+              groupMap.set(weId, { exercise: ep.workout_exercise.exercise, records: [] });
+            }
+            groupMap.get(weId)?.records.push({
+              set: ep.sets, 
+              reps: ep.reps, 
+              weight_used: ep.weight_used ?? null,
             });
+          });
+      
+          // Process each group.
+          const exercises = Array.from(groupMap.values()).map((group) => {
+            // Sort the records by the set number.
+            group.records.sort((a, b) => a.set - b.set);
+            const reps = group.records.map(r => r.reps);
+            const weightUsed = group.records.map(r => r.weight_used);
+            // Calculate totalDuration using the first set's data (assuming same duration for each set).
+            const duration = group.exercise.duration || 0;
+            const restTime = duration ? this.getRestTime(group.exercise.intensity) : 0;
+            const totalDuration = (duration + restTime);
+            // Extract muscle names from exercise.muscles.
+            const musclesHit = group.exercise.muscles.map((em: any) => em.muscle.name);
             return {
-                date: formattedDate,
-                exercises,
+              name: group.exercise.name,
+              reps,
+              weight_used: weightUsed,
+              musclesHit,
+              totalDuration,
             };
+          });
+      
+          return {
+            date: formattedDate,
+            exercises,
+          };
         });
-
+      
         return formatted;
-    }
+      }
 
     async getUserWorkouts(userId: number): Promise<any> {
-      // Retrieve the workoutperweek records for the user, including nested workouts.
+      const yesterdayEnd = moment().subtract(1, 'days').endOf('day').toDate();
+      await this.databaseService.workout.updateMany({
+        data: {
+          status: 'skipped',
+        },
+        where: {
+          status: 'pending',
+          date: {
+            lte: yesterdayEnd,
+          },
+          perWeek: {
+            some: {
+              workoutperweek: {
+                user_id: userId,
+              },
+            },
+          },
+        },
+      });
       const wpwRecords = await this.databaseService.workoutperweek.findMany({
         where: { user_id: userId },
         include: {
@@ -1155,6 +1213,7 @@ export class WorkoutService {
       for (const workout of workouts) {
         // Format the workout date using Moment.js.
         const formattedDate = moment(workout.date).format('dddd, Do MMMM YYYY');
+        const status = workout.status
         const exercisesArr = [];
         let dayTotalDuration = 0;
     
@@ -1196,6 +1255,7 @@ export class WorkoutService {
     
         formattedWorkouts.push({
           date: formattedDate,
+          status : status,
           exercises: exercisesArr,
           totalWorkoutDuration: dayTotalDuration,
         });
@@ -1263,6 +1323,99 @@ export class WorkoutService {
         exercises: exercisesDetailed,
       };
     }
+
+    async getExerciseHistory(user_id: number, exercise_cd: string): Promise<any> {
+      // Retrieve all workout_progress records for the user including nested exercise progress data.
+      const progressRecords = await this.databaseService.workout_progress.findMany({
+        where: { user_id },
+        include: {
+          // We assume the workout_progress.date represents the date when the workout was completed.
+          exerciseProgress: {
+            include: {
+              workout_exercise: {
+                include: {
+                  exercise: {
+                    include: {
+                      muscles: { include: { muscle: true } },
+                      // Include image field if available
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        orderBy: { date: 'asc' },
+      });
+    
+      // Flatten all exerciseProgress entries that match the given exercise_cd.
+      const matchingRecords = [];
+      progressRecords.forEach((wp) => {
+        wp.exerciseProgress.forEach((ep) => {
+          if (ep.workout_exercise.exercise.exercise_cd === exercise_cd) {
+            matchingRecords.push({
+              date: wp.date,
+              set: ep.sets, // The set number for that exercise progress record.
+              reps: ep.reps,
+              weight_used: ep.weight_used ?? null,
+              exercise: ep.workout_exercise.exercise,
+            });
+          }
+        });
+      });
+    
+      // Group the matching records by formatted date.
+      const groupedByDate: Record<string, any[]> = {};
+      matchingRecords.forEach((rec) => {
+        const formattedDate = moment(rec.date).format('dddd, Do MMMM YYYY');
+        if (!groupedByDate[formattedDate]) {
+          groupedByDate[formattedDate] = [];
+        }
+        groupedByDate[formattedDate].push(rec);
+      });
+    
+      // Helper to calculate rest time.
+      const getRestTime = (intensity: string): number => {
+        switch (intensity.toLowerCase()) {
+          case 'low': return 1;
+          case 'medium': return 2;
+          case 'high': return 4;
+          case 'very high':
+          case 'very_high': return 6;
+          default: return 0;
+        }
+      };
+    
+      // Build the output array.
+      const history = [];
+      for (const dateStr in groupedByDate) {
+        const records = groupedByDate[dateStr];
+        // Sort by set number (ascending).
+        records.sort((a, b) => a.set - b.set);
+        // Assume all records for the same exercise_cd share the same exercise details.
+        const exerciseName = records[0].exercise.name;
+        const exerciseImage = records[0].exercise.image || null;
+        const sets_done = records.length;
+        const repsArray = records.map((r) => r.reps);
+        const weightArray = records.map((r) => r.weight_used);
+        // Calculate totalDuration per set from exercise data (same for all sets in a day).
+        const duration = records[0].exercise.duration || 0;
+        const restTime = duration ? getRestTime(records[0].exercise.intensity) : 0;
+        const totalDuration = (duration + restTime);
+        history.push({
+          date: dateStr,
+          exercise_name: exerciseName,
+          exercise_image: exerciseImage,
+          sets_done,
+          reps: repsArray,
+          weight_used: weightArray,
+          totalDuration, // This represents the duration per set.
+        });
+      }
+    
+      return history;
+    }
+    
     
 
     private getRestTime(intensity: string): number {

@@ -259,25 +259,55 @@ example output:
 
 GET
 workout/today/:user_id
+example output : 
 {
     "statusCode": 200,
     "message": "Workout for today retrieved successfully",
     "data": {
-        "workout_id": 10,
-        "date": "2025-03-03T07:28:05.399Z",
+        "workout_id": 179,
+        "date": "2025-03-10T02:42:55.470Z",
         "exercises": [
             {
-                "workout_exercise_id": 21,
-                "name": "One Arm Pull up",
-                "sets": 3,
+                "workout_exercise_id": 735,
+                "exercise_cd": "LD",
+                "name": "Deadlift (4-8) - (160kg)",
+                "sets": 4,
                 "reps": null,
                 "weight_used": null,
                 "level_done": null
             },
             {
-                "workout_exercise_id": 22,
-                "name": "dips",
-                "sets": 3,
+                "workout_exercise_id": 736,
+                "exercise_cd": "PLU",
+                "name": "Low one hand Pull up (8-12)",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 737,
+                "exercise_cd": "PU",
+                "name": "Low one arm Push up (6-12)",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 738,
+                "exercise_cd": "BTC",
+                "name": "One arm high bodyweight tricep extension (6-8)",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 739,
+                "exercise_cd": "BBC",
+                "name": "bodyweight bicep curl",
+                "sets": 4,
                 "reps": null,
                 "weight_used": null,
                 "level_done": null
@@ -290,54 +320,105 @@ POST
 workout/create (buat insert progress, inputannya ambil dari get today workout yang diatas)
 example input :
 {
-	"user_id" : 2,
-        "workout_id": 1,
-        "date": "2025-03-03T07:01:18.017Z",
-        "exercises": [
-            {
-                "workout_exercise_id": 1,
-                "name": "deadlift",
-                "sets": 3,
-                "reps": 9,
-                "weight_used": 500
-            },
-            {
-                "workout_exercise_id": 2,
-                "name": "Push up",
-                "sets": 3,
-                "reps": 20,
-                "level_done": 1
-            },
-            {
-                "workout_exercise_id": 3,
-                "name": "static tuck front lever",
-                "sets": 3,
-                "reps": 3,
-                "level_done": 1
-            },
-            {
-                "workout_exercise_id": 4,
-                "name": "dumbell bicep curl",
-                "sets": 3,
-                "reps": 12,
-                "weight_used": 20
-            },
-            {
-                "workout_exercise_id": 5,
-                "name": "Side lateral raise",
-                "sets": 3,
-                "reps": 14,
-                "weight_used": 10
-            },
-            {
-                "workout_exercise_id": 6,
-                "name": "bodyweight row",
-                "sets": 3,
-                "reps": 10,
-                "level_done": 1
-            }
-        ]
-    }
+	"user_id": 2,
+	"workout_id": 179,
+	"date": "2025-03-10T02:42:55.470Z",
+	"exercises": [
+		{
+			"workout_exercise_id": 735,
+			"name": "Deadlift (4-8) - (160kg)",
+			"sets": [
+				{
+					"set_number": 1,
+					"reps": 7,
+					"weight_used": 160
+				},
+				{
+					"set_number": 2,
+					"reps": 7,
+					"weight_used": 160
+				},
+				{
+					"set_number": 3,
+					"reps": 6,
+					"weight_used": 160
+				}
+			]
+		},
+		{
+			"workout_exercise_id": 736,
+			"name": "Low one hand Pull up (8-12)",
+			"sets": [
+				{
+					"set_number": 1,
+					"reps": 13
+				},
+				{
+					"set_number": 2,
+					"reps": 13
+				},
+				{
+					"set_number": 3,
+					"reps": 13
+				}
+			]
+		},
+		{
+			"workout_exercise_id": 737,
+			"name": "Low one arm Push up (6-12)",
+			"sets": [
+				{
+					"set_number": 1,
+					"reps": 11
+				},
+				{
+					"set_number": 2,
+					"reps": 10
+				},
+				{
+					"set_number": 3,
+					"reps": 11
+				}
+			]
+		},
+		{
+			"workout_exercise_id": 738,
+			"name": "One arm high bodyweight tricep extension (6-8)",
+			"sets": [
+				{
+					"set_number": 1,
+					"reps": 9
+				},
+				{
+					"set_number": 2,
+					"reps": 7
+				},
+				{
+					"set_number": 3,
+					"reps": 6
+				}
+			]
+		},
+		{
+			"workout_exercise_id": 739,
+			"name": "bodyweight bicep curl",
+			"sets": [
+				{
+					"set_number": 1,
+					"reps": 8
+				},
+				{
+					"set_number": 2,
+					"reps": 7
+				},
+				{
+					"set_number": 3,
+					"reps": 6
+				}
+			]
+		}
+	]
+}
 
 POST
 workout/generate/:user_id (cuma bisa di hit kalo height & weight, availabilities dan equipments usernya udah ada)
@@ -680,3 +761,255 @@ Body :
 
 Get 
 /user/:user_id (ganti sama id usernya)
+
+Get 
+/workout/progress/:user_id (ganti sama id usernya)
+example output : 
+{
+    "statusCode": 200,
+    "message": "User progress retrieved successfully",
+    "data": [
+        {
+            "date": "Monday, 10th March 2025",
+            "exercises": [
+                {
+                    "name": "Deadlift (4-8) - (160kg)",
+                    "reps": [
+                        7,
+                        7,
+                        6
+                    ],
+                    "weight_used": [
+                        160,
+                        160,
+                        160
+                    ],
+                    "musclesHit": [
+                        "quads",
+                        "hamstring",
+                        "mid back"
+                    ],
+                    "totalDuration": 8
+                },
+                {
+                    "name": "Low one hand Pull up (8-12)",
+                    "reps": [
+                        13,
+                        13,
+                        13
+                    ],
+                    "weight_used": [
+                        null,
+                        null,
+                        null
+                    ],
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
+                    "totalDuration": 5
+                },
+                {
+                    "name": "Low one arm Push up (6-12)",
+                    "reps": [
+                        11,
+                        10,
+                        11
+                    ],
+                    "weight_used": [
+                        null,
+                        null,
+                        null
+                    ],
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "totalDuration": 4
+                },
+                {
+                    "name": "One arm high bodyweight tricep extension (6-8)",
+                    "reps": [
+                        9,
+                        7,
+                        6
+                    ],
+                    "weight_used": [
+                        null,
+                        null,
+                        null
+                    ],
+                    "musclesHit": [
+                        "triceps"
+                    ],
+                    "totalDuration": 5
+                },
+                {
+                    "name": "bodyweight bicep curl",
+                    "reps": [
+                        8,
+                        7,
+                        6
+                    ],
+                    "weight_used": [
+                        null,
+                        null,
+                        null
+                    ],
+                    "musclesHit": [
+                        "biceps"
+                    ],
+                    "totalDuration": 4
+                }
+            ]
+        },
+        {
+            "date": "Monday, 3rd March 2025",
+            "exercises": [
+                {
+                    "name": "Pull up (3-6)",
+                    "reps": [
+                        8
+                    ],
+                    "weight_used": [
+                        null
+                    ],
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
+                    "totalDuration": 5
+                },
+                {
+                    "name": "Deadlift (4-8) - (20kg)",
+                    "reps": [
+                        9
+                    ],
+                    "weight_used": [
+                        30
+                    ],
+                    "musclesHit": [
+                        "quads",
+                        "hamstring",
+                        "mid back"
+                    ],
+                    "totalDuration": 8
+                },
+                {
+                    "name": "Knee Push up (3-12)",
+                    "reps": [
+                        13
+                    ],
+                    "weight_used": [
+                        null
+                    ],
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "totalDuration": 4
+                },
+                {
+                    "name": "Unilateral Romanian Deadlift (6-12) - no equipment",
+                    "reps": [
+                        11
+                    ],
+                    "weight_used": [
+                        null
+                    ],
+                    "musclesHit": [
+                        "hamstring"
+                    ],
+                    "totalDuration": 5
+                },
+                {
+                    "name": "Reverse lunge (6-12)",
+                    "reps": [
+                        10
+                    ],
+                    "weight_used": [
+                        null
+                    ],
+                    "musclesHit": [
+                        "quads"
+                    ],
+                    "totalDuration": 5
+                },
+                {
+                    "name": "Barbell Romanian Deadlift (4-8) - (20 kg)",
+                    "reps": [
+                        5
+                    ],
+                    "weight_used": [
+                        30
+                    ],
+                    "musclesHit": [
+                        "hamstring"
+                    ],
+                    "totalDuration": 8
+                }
+            ]
+        }
+    ]
+}
+
+Get 
+workout/exercise-history?user_id=2&exercise_cd=LD (exercise_cd dapet dari workout/today/:user_id)
+example output :
+{
+    "statusCode": 200,
+    "message": "Workout for today retrieved successfully",
+    "data": {
+        "workout_id": 179,
+        "date": "2025-03-10T02:42:55.470Z",
+        "exercises": [
+            {
+                "workout_exercise_id": 735,
+                "exercise_cd": "LD",
+                "name": "Deadlift (4-8) - (160kg)",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 736,
+                "exercise_cd": "PLU",
+                "name": "Low one hand Pull up (8-12)",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 737,
+                "exercise_cd": "PU",
+                "name": "Low one arm Push up (6-12)",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 738,
+                "exercise_cd": "BTC",
+                "name": "One arm high bodyweight tricep extension (6-8)",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            },
+            {
+                "workout_exercise_id": 739,
+                "exercise_cd": "BBC",
+                "name": "bodyweight bicep curl",
+                "sets": 4,
+                "reps": null,
+                "weight_used": null,
+                "level_done": null
+            }
+        ]
+    }
+}

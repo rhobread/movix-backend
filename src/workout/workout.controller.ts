@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
 import { WorkoutService } from './workout.service';
 
 @Controller('workout')
@@ -70,8 +70,8 @@ export class WorkoutController {
     exercises: {
       workout_exercise_id: number;
       name: string;
-      sets: { set_number: number; reps: number }[];
-      weight_used?: number;
+      sets: { set_number: number; reps: number; weight_used?:number }[];
+      // weight_used?: number[];
     }[];
   }) {
     const progress = await this.workoutService.createProgress(progressInput);
@@ -89,6 +89,19 @@ export class WorkoutController {
       statusCode: 200,
       message: 'Workout for today retrieved successfully',
       data: workout,
+    };
+  }
+
+  @Get('exercise-history')
+  async getExerciseHistory(
+    @Query('user_id') user_id:string,
+    @Query('exercise_cd') exercise_cd:string
+  ){
+    const history = await this.workoutService.getExerciseHistory(+user_id, exercise_cd)
+    return {
+      statusCode: 200,
+      message: 'this users history get sucessfully',
+      data: history,
     };
   }
 

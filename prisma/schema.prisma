@@ -69,6 +69,7 @@ model workout {
   exercises workout_exercise[]
   perWeek   workout_per_week_workout[]
   date      DateTime                   @default(now())
+  status    String?                    @default("pending")
 
   workout_progress workout_progress[]
 }
