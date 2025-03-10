@@ -13,10 +13,18 @@ export class UserController {
   ) {
     const user = await this.userService.createUser(body);
     return {
-      statusCode: 201,
+      statusCode: 200,
       message: 'User created successfully',
       data: user,
     };
+  }
+
+  @Post('login')
+  @HttpCode(200)
+  async login(
+    @Body() body: { email: string; password: string },
+  ){
+    return await this.userService.login(body);
   }
 
   // 2. Update user's height and weight

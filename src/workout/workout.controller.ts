@@ -69,10 +69,9 @@ export class WorkoutController {
     date: Date;
     exercises: {
       workout_exercise_id: number;
-      sets: number;
-      reps: number;
+      name: string;
+      sets: { set_number: number; reps: number }[];
       weight_used?: number;
-      level_done?: number;
     }[];
   }) {
     const progress = await this.workoutService.createProgress(progressInput);

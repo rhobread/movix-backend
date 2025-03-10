@@ -47,6 +47,57 @@ export class UserService {
     return user;
   }
 
+  async login(body: {email:string, password:string}){
+    try {
+      const existingUser = await this.prisma.users.findFirst({
+        where : {
+          email: body.email,
+          password: body.password
+        }
+      })
+      
+      if (!existingUser){
+        throw new BadRequestException({
+          statusCode: 400,
+          message: 'Invalid email or password',
+          data: []
+        })
+      }
+
+      return {
+        statusCode: 200,
+        message: 'log in success',
+        data: existingUser,
+      };
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getUserById(user_id:number){
+    try {
+      const user = await this.prisma.users.findFirst({
+        where :{
+          id : user_id
+        }
+      })
+      if (!user){
+        throw new BadRequestException({
+          statusCode: 400,
+          message: 'no user with this id',
+          data: []
+        })
+      }
+
+      return {
+        statusCode: 200,
+        message: 'get user success',
+        data: user,
+      };
+    } catch (error) {
+      throw error
+    }
+  }
 
   async updateUserMeasurements(userId: number, measurements: { height: number; weight: number }): Promise<any> {
     const updatedUser = await this.prisma.users.update({

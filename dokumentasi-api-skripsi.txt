@@ -667,3 +667,16 @@ example output :
         }
     ]
 }
+
+
+10 maret 2025
+Post 
+/user/login
+Body : 
+{
+    "email" : "email@email.com",
+    "password" : "pass1234"
+}
+
+Get 
+/user/:user_id (ganti sama id usernya)

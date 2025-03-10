@@ -491,7 +491,8 @@ export class WorkoutService {
       const filteredExercises = exercises.filter((ex) => {
         if (ex.equipments.length === 0) return true;
         return ex.equipments.every(
-          (eq) => eq.equipment_id === null || userEquipmentIds.includes(eq.equipment_id)
+          (eq) =>
+            eq.equipment_id === null || userEquipmentIds.includes(eq.equipment_id)
         );
       });
     
@@ -517,11 +518,9 @@ export class WorkoutService {
           }
           return true; // if no group info, it's valid.
         });
-        // If none pass the filter, fallback to all variants.
-        if (validVariants.length === 0) {
-          validVariants = variants;
-        }
-        // Sort variants descending by difficulty.
+        // If no valid variant exists, fallback to all variants.
+        // if (validVariants.length === 0) validVariants = variants;
+        // Sort variants descending by difficulty (if group info exists).
         validVariants.sort((a, b) => {
           const diffA = a.group && a.group.length > 0 ? a.group[0].difficulty || 0 : 0;
           const diffB = b.group && b.group.length > 0 ? b.group[0].difficulty || 0 : 0;
@@ -556,18 +555,21 @@ export class WorkoutService {
       });
     
       // 8. Build weekly workout plans using overall (global) muscle balance.
+      // Each day is now planned independently without an overall cap; each exercise can appear up to 4 sets on a given day.
       const workoutsPlan = [];
       const marginMultiplier = 1.2; // up to 20% over nominal minutes
       const globalMusclePoints: Record<string, number> = {};
       const allMuscleNames = (await this.databaseService.muscle.findMany()).map((m) => m.name);
       allMuscleNames.forEach((name) => (globalMusclePoints[name] = 0));
-      const overallExerciseSetCount: Record<number, number> = {}; // now no cap on sets
     
       for (let i = 0; i < daysAvailable.length; i++) {
         const nominalTime = minutesAvailable[i];
         const timeLimit = nominalTime * marginMultiplier;
         let usedTime = 0;
-        let dayExercises: { exercise: any; sets: number }[] = [];
+        const dayExercises: { exercise: any; sets: number }[] = [];
+        // Use a daily count that resets each day.
+        const dayExerciseSetCount: Record<number, number> = {};
+    
         const computeImbalance = (mp: Record<string, number>): number => {
           const values = Object.values(mp);
           const avg = values.reduce((a, b) => a + b, 0) / values.length || 0;
@@ -585,13 +587,16 @@ export class WorkoutService {
           let bestCandidate = null;
           let bestImbalance = Number.POSITIVE_INFINITY;
           let bestSets = 0;
-          // Now, we allow as many sets as time permits; no fixed cap.
+          let foundCandidate = false;
+          // For each candidate, consider how many sets can be added on this day (with no overall cap but a daily cap of 4 sets per exercise).
           for (const candidate of candidates) {
-            // Determine the maximum sets that can fit in the remaining time.
+            const currentSets = dayExerciseSetCount[candidate.id] || 0;
+            const maxAdditional = 4 - currentSets; // Daily cap: 4 sets per exercise per day.
+            if (maxAdditional < 1) continue;
             const maxByTime = Math.floor((timeLimit - usedTime) / candidate.totalTime);
-            if (maxByTime < 1) continue;
-            // Allow all possible sets for this candidate.
-            const possibleSets = maxByTime;
+            const possibleSets = Math.min(maxAdditional, maxByTime);
+            if (possibleSets < 1) continue;
+            foundCandidate = true;
             const simulatedGlobal = { ...globalMusclePoints };
             candidate.muscles.forEach((em) => {
               const muscleName = em.muscle.name;
@@ -604,13 +609,31 @@ export class WorkoutService {
               bestSets = possibleSets;
             }
           }
+          // If no candidate is found that can add sets to reach 4, allow adding one extra set.
+          if (!foundCandidate) {
+            for (const candidate of candidates) {
+              const maxByTime = Math.floor((timeLimit - usedTime) / candidate.totalTime);
+              if (maxByTime < 1) continue;
+              const simulatedGlobal = { ...globalMusclePoints };
+              candidate.muscles.forEach((em) => {
+                const muscleName = em.muscle.name;
+                simulatedGlobal[muscleName] += em.rating; // adding one set
+              });
+              const imbalance = computeImbalance(simulatedGlobal);
+              if (imbalance < bestImbalance) {
+                bestImbalance = imbalance;
+                bestCandidate = candidate;
+                bestSets = 1;
+              }
+            }
+          }
           if (!bestCandidate) break;
           bestCandidate.muscles.forEach((em) => {
             const muscleName = em.muscle.name;
             globalMusclePoints[muscleName] += em.rating * bestSets;
           });
-          // Accumulate sets for each exercise (without any cap).
-          overallExerciseSetCount[bestCandidate.id] = (overallExerciseSetCount[bestCandidate.id] || 0) + bestSets;
+          const prevSets = dayExerciseSetCount[bestCandidate.id] || 0;
+          dayExerciseSetCount[bestCandidate.id] = prevSets + bestSets;
           const existing = dayExercises.find((e) => e.exercise.id === bestCandidate.id);
           if (existing) {
             existing.sets += bestSets;
@@ -620,16 +643,30 @@ export class WorkoutService {
           usedTime += bestCandidate.totalTime * bestSets;
           if (usedTime >= nominalTime * 0.95) break;
         }
+        
+        // After candidate selection, reorder dayExercises by grouping complementary muscle groups.
+        const getGroupPriority = (ex: ExtendedExercise): number => {
+          if (ex.group && ex.group.length > 0) {
+            const groupId = ex.group[0].group_id;
+            // Priority: leg push (1) & leg pull (2): priority 1; upper pull (3) & horizontal push (4): priority 2;
+            // bicep (6) & tricep (7): priority 3; side delt (5): priority 4.
+            if ([1, 2].includes(groupId)) return 1;
+            if ([3, 4].includes(groupId)) return 2;
+            if ([6, 7].includes(groupId)) return 3;
+            if (groupId === 5) return 4;
+          }
+          return 99;
+        };
     
-        // Reorder day exercises by group priority for effective grouping.
-        // Define a custom priority order by group name.
-        const groupPriority = ['leg push', 'leg pull', 'upper pull', 'horizontal push', 'side delt', 'bicep', 'tricep'];
         dayExercises.sort((a, b) => {
-          const groupA = a.exercise.group && a.exercise.group.length > 0 ? a.exercise.group[0].group.name.toLowerCase() : '';
-          const groupB = b.exercise.group && b.exercise.group.length > 0 ? b.exercise.group[0].group.name.toLowerCase() : '';
-          const indexA = groupPriority.indexOf(groupA) === -1 ? 999 : groupPriority.indexOf(groupA);
-          const indexB = groupPriority.indexOf(groupB) === -1 ? 999 : groupPriority.indexOf(groupB);
-          return indexA - indexB;
+          const priA = getGroupPriority(a.exercise);
+          const priB = getGroupPriority(b.exercise);
+          if (priA === priB) {
+            const diffA = a.exercise.group && a.exercise.group.length > 0 ? a.exercise.group[0].difficulty || 0 : 0;
+            const diffB = b.exercise.group && b.exercise.group.length > 0 ? b.exercise.group[0].difficulty || 0 : 0;
+            return diffB - diffA;
+          }
+          return priA - priB;
         });
     
         let workoutDate = moment().day(daysAvailable[i]);
@@ -641,11 +678,16 @@ export class WorkoutService {
         });
       }
     
-      // 9. Dummy load calculation: for weight, constant; for bodyweight, use the selected exercise's level (from group difficulty).
+      // 9. Dummy load calculation: for weight, constant; for bodyweight, use the exercise's group difficulty.
       const calculateLoad = (exercise: any) => {
         if (exercise.types === 'weight') return { weight: 10 };
         if (exercise.types === 'bodyweight')
-          return { level: exercise.group && exercise.group.length > 0 ? exercise.group[0].difficulty : null };
+          return {
+            level:
+              exercise.group && exercise.group.length > 0
+                ? exercise.group[0].difficulty
+                : null,
+          };
         return {};
       };
     
@@ -662,7 +704,7 @@ export class WorkoutService {
               workout_id: workoutRecord.id,
               exercise_id: item.exercise.id,
               set: item.sets,
-              reps: 10,
+              reps: item.max_rep,
               weight: load.weight || null,
             },
           });
@@ -684,6 +726,8 @@ export class WorkoutService {
       }
       return workoutPerWeekRecord;
     }
+    
+    
     
 
     async getWorkoutPlan(workout_per_week_id: number) {
@@ -875,26 +919,31 @@ export class WorkoutService {
       date: Date;
       exercises: {
         workout_exercise_id: number;
-        sets: number;
-        reps: number;
+        name: string;
+        sets: { set_number: number; reps: number }[];
         weight_used?: number;
       }[];
-    }) {
+    }): Promise<any> {
       const { user_id, workout_id, date, exercises } = progressInput;
     
       // Create a workout_progress record with nested exercise_progress entries.
+      // Sort the sets for each exercise by set_number ascending so they are inserted in order.
       const newProgress = await this.databaseService.workout_progress.create({
         data: {
           user_id,
           workout_id,
           date,
           exerciseProgress: {
-            create: exercises.map((ex) => ({
-              workout_exercise_id: ex.workout_exercise_id,
-              sets: ex.sets,
-              reps: ex.reps,
-              weight_used: ex.weight_used ?? null
-            })),
+            create: exercises.flatMap((ex) =>
+              ex.sets
+                .sort((a, b) => a.set_number - b.set_number)
+                .map((setItem) => ({
+                  workout_exercise_id: ex.workout_exercise_id,
+                  sets: setItem.set_number, // use the set_number to indicate the nth set
+                  reps: setItem.reps,
+                  weight_used: ex.weight_used ?? null,
+                }))
+            ),
           },
         },
         include: {
@@ -902,40 +951,42 @@ export class WorkoutService {
         },
       });
     
+      // To ensure the user levels up only once per group during this endpoint call.
+      const leveledUpGroups = new Set<number>();
+    
       // For each exercise progress submitted, update the user's level if needed.
-      for (const exProgress of exercises) {
-        // Retrieve the workout_exercise to get the associated exercise details.
+      // Retrieve the associated workout_exercise to get the related exercise details.
+      for (const ex of exercises) {
         const we = await this.databaseService.workout_exercise.findUnique({
-          where: { id: exProgress.workout_exercise_id },
-          include: { 
+          where: { id: ex.workout_exercise_id },
+          include: {
             exercise: {
-              include: { 
-                group: true  // Retrieves associated excercise_group entries.
-              } 
-            } 
+              include: {
+                group: true, // Retrieves associated excercise_group entries.
+              },
+            },
           },
         });
-    
         if (!we) continue;
-    
         const exercise = we.exercise;
-    
-        // Use the max_rep value from the exercise (or Infinity if not set).
         const maxRep = exercise.max_rep || Infinity;
-    
-        // If the user performed more reps than max_rep, level up the user in that exercise's group.
-        if (exProgress.reps > maxRep) {
-          // Ensure the exercise has an associated group.
-          if (exercise.group && exercise.group.length > 0) {
-            // We'll take the first group.
-            const groupId = exercise.group[0].group_id;
-            // Update the user's group level: increment level by 1.
-            await this.databaseService.user_group_level.update({
-              where: { 
-                user_id_group_id: { user_id, group_id: groupId } 
-              },
-              data: { level: { increment: 1 } },
-            });
+        // Check each individual set.
+        for (const setItem of ex.sets) {
+          if (setItem.reps > maxRep) {
+            // Only consider leveling up if the exercise has group info.
+            if (exercise.group && exercise.group.length > 0) {
+              const groupId = exercise.group[0].group_id;
+              // Only update once per group.
+              if (!leveledUpGroups.has(groupId)) {
+                await this.databaseService.user_group_level.update({
+                  where: { 
+                    user_id_group_id: { user_id, group_id: groupId } 
+                  },
+                  data: { level: { increment: 1 } },
+                });
+                leveledUpGroups.add(groupId);
+              }
+            }
           }
         }
       }
@@ -943,14 +994,16 @@ export class WorkoutService {
       return newProgress;
     }
     
+    
+    
       
 
     async getWorkoutForToday(userId: number): Promise<any> {
-        // const startOfToday = moment().startOf('day').toDate();
-        // const endOfToday = moment().endOf('day').toDate();
+        const startOfToday = moment().startOf('day').toDate();
+        const endOfToday = moment().endOf('day').toDate();
 
-        const startOfToday = moment('20250303').toDate()
-        const endOfToday = moment('20250304').toDate()
+        // const startOfToday = moment('20250303').toDate()
+        // const endOfToday = moment('20250304').toDate()
     
         // Find a workout scheduled for today that belongs to the user.
         // We check that there is at least one workout_per_week_workout linking this workout to a workoutperweek
