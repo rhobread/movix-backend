@@ -457,157 +457,438 @@ example output :
 GET
 workout/user/:user_id (ganti sama id usernya)
 example output :
-[
-    {
-        "workout_id": 15,
-        "date": "2025-02-28T07:53:31.036Z",
-        "exercises": []
-    },
-    {
-        "workout_id": 18,
-        "date": "2025-02-28T08:03:59.100Z",
-        "exercises": [
-            {
-                "workout_exercise_id": 50,
-                "name": "Side lateral raise",
-                "duration": 2,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 51,
-                "name": "reverse lunge",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 52,
-                "name": "bodyweight row",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 53,
-                "name": "dips",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 54,
-                "name": "static tuck front lever",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 55,
-                "name": "dumbell bicep curl",
-                "duration": 2,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 56,
-                "name": "bodyweight tricep extension",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 57,
-                "name": "Push up",
-                "duration": 2,
-                "restTime": 2
-            }
-        ]
-    },
-    {
-        "workout_id": 16,
-        "date": "2025-03-03T08:03:59.099Z",
-        "exercises": [
-            {
-                "workout_exercise_id": 37,
-                "name": "bodyweight row",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 38,
-                "name": "Push up",
-                "duration": 2,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 39,
-                "name": "Side lateral raise",
-                "duration": 2,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 40,
-                "name": "reverse lunge",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 41,
-                "name": "dumbell bicep curl",
-                "duration": 2,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 42,
-                "name": "bodyweight tricep extension",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 43,
-                "name": "static tuck front lever",
-                "duration": 3,
-                "restTime": 2
-            }
-        ]
-    },
-    {
-        "workout_id": 17,
-        "date": "2025-03-05T08:03:59.100Z",
-        "exercises": [
-            {
-                "workout_exercise_id": 44,
-                "name": "dips",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 45,
-                "name": "bodyweight row",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 46,
-                "name": "Side lateral raise",
-                "duration": 2,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 47,
-                "name": "reverse lunge",
-                "duration": 3,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 48,
-                "name": "dumbell bicep curl",
-                "duration": 2,
-                "restTime": 2
-            },
-            {
-                "workout_exercise_id": 49,
-                "name": "Push up",
-                "duration": 2,
-                "restTime": 2
-            }
-        ]
+{
+    "workouts": [
+        {
+            "date": "Monday, 3rd March 2025",
+            "status": "skipped",
+            "exercises": [
+                {
+                    "workout_exercise_id": 1,
+                    "name": "Pull up (3-6)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "upper pull",
+                        "difficulty": 4
+                    }
+                },
+                {
+                    "workout_exercise_id": 2,
+                    "name": "Deadlift (4-8) - (20kg)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 24,
+                    "musclesHit": [
+                        "quads",
+                        "hamstring",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "leg push",
+                        "difficulty": 1
+                    }
+                },
+                {
+                    "workout_exercise_id": 3,
+                    "name": "Knee Push up (3-12)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 12,
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "group": {
+                        "name": "horizontal push",
+                        "difficulty": 1
+                    }
+                },
+                {
+                    "workout_exercise_id": 4,
+                    "name": "Unilateral Romanian Deadlift (6-12) - no equipment",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "hamstring"
+                    ],
+                    "group": {
+                        "name": "leg pull",
+                        "difficulty": 1
+                    }
+                },
+                {
+                    "workout_exercise_id": 5,
+                    "name": "Reverse lunge (6-12)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "quads"
+                    ],
+                    "group": {
+                        "name": "leg push",
+                        "difficulty": 1
+                    }
+                },
+                {
+                    "workout_exercise_id": 6,
+                    "name": "Barbell Romanian Deadlift (4-8) - (20 kg)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 24,
+                    "musclesHit": [
+                        "hamstring"
+                    ],
+                    "group": {
+                        "name": "leg pull",
+                        "difficulty": 1
+                    }
+                }
+            ],
+            "totalWorkoutDuration": 105
+        },
+        {
+            "date": "Wednesday, 5th March 2025",
+            "status": "skipped",
+            "exercises": [
+                {
+                    "workout_exercise_id": 203,
+                    "name": "Deadlift (4-8) - (140kg)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 24,
+                    "musclesHit": [
+                        "quads",
+                        "hamstring",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "leg push",
+                        "difficulty": 7
+                    }
+                },
+                {
+                    "workout_exercise_id": 204,
+                    "name": "Low one arm Push up (3-6)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 12,
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "group": {
+                        "name": "horizontal push",
+                        "difficulty": 7
+                    }
+                },
+                {
+                    "workout_exercise_id": 205,
+                    "name": "High one hand Pull up (6-8)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 15,
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "upper pull",
+                        "difficulty": 6
+                    }
+                },
+                {
+                    "workout_exercise_id": 206,
+                    "name": "Barbell Romanian Deadlift (4-8) - (80 kg)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 24,
+                    "musclesHit": [
+                        "hamstring"
+                    ],
+                    "group": {
+                        "name": "leg pull",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 207,
+                    "name": "High one arm Push up (6-12)",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 12,
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "group": {
+                        "name": "horizontal push",
+                        "difficulty": 6
+                    }
+                }
+            ],
+            "totalWorkoutDuration": 87
+        },
+        {
+            "date": "Friday, 7th March 2025",
+            "status": "skipped",
+            "exercises": [
+                {
+                    "workout_exercise_id": 744,
+                    "name": "Barbell Romanian Deadlift (4-8) - (80 kg)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 32,
+                    "musclesHit": [
+                        "hamstring"
+                    ],
+                    "group": {
+                        "name": "leg pull",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 745,
+                    "name": "Barbell squat (6-10) - (120kg + squat rack)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 32,
+                    "musclesHit": [
+                        "quads"
+                    ],
+                    "group": {
+                        "name": "leg push",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 746,
+                    "name": "Low one arm Push up (6-12)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 16,
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "group": {
+                        "name": "horizontal push",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 747,
+                    "name": "bodyweight bicep curl",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 16,
+                    "musclesHit": [
+                        "biceps"
+                    ],
+                    "group": {
+                        "name": "bicep",
+                        "difficulty": 6
+                    }
+                }
+            ],
+            "totalWorkoutDuration": 96
+        },
+        {
+            "date": "Monday, 10th March 2025",
+            "status": "pending",
+            "exercises": [
+                {
+                    "workout_exercise_id": 735,
+                    "name": "Deadlift (4-8) - (160kg)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 32,
+                    "musclesHit": [
+                        "quads",
+                        "hamstring",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "leg push",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 736,
+                    "name": "Low one hand Pull up (8-12)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 20,
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "upper pull",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 737,
+                    "name": "Low one arm Push up (6-12)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 16,
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "group": {
+                        "name": "horizontal push",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 738,
+                    "name": "One arm high bodyweight tricep extension (6-8)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 20,
+                    "musclesHit": [
+                        "triceps"
+                    ],
+                    "group": {
+                        "name": "tricep",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 739,
+                    "name": "bodyweight bicep curl",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 16,
+                    "musclesHit": [
+                        "biceps"
+                    ],
+                    "group": {
+                        "name": "bicep",
+                        "difficulty": 6
+                    }
+                }
+            ],
+            "totalWorkoutDuration": 104
+        },
+        {
+            "date": "Wednesday, 12th March 2025",
+            "status": "pending",
+            "exercises": [
+                {
+                    "workout_exercise_id": 740,
+                    "name": "Deadlift (4-8) - (160kg)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": 10,
+                    "totalDuration": 32,
+                    "musclesHit": [
+                        "quads",
+                        "hamstring",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "leg push",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 741,
+                    "name": "Low one hand Pull up (8-12)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 20,
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "upper pull",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 742,
+                    "name": "Low one arm Push up (6-12)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 16,
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "group": {
+                        "name": "horizontal push",
+                        "difficulty": 8
+                    }
+                },
+                {
+                    "workout_exercise_id": 743,
+                    "name": "Low one hand Pull up (6-8)",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight": null,
+                    "totalDuration": 20,
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
+                    "group": {
+                        "name": "upper pull",
+                        "difficulty": 7
+                    }
+                }
+            ],
+            "totalWorkoutDuration": 88
+        }
+    ],
+    "musclePoints": {
+        "lats": 126,
+        "biceps": 128,
+        "mid back": 132,
+        "quads": 182,
+        "hamstring": 214,
+        "chest": 168,
+        "triceps": 133
     }
-]
+}
 
 GET
 workout/detail/:workout_id (ganti id workoutnya, dari output yg di atas tuh ada workout_id)

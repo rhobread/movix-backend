@@ -27,6 +27,10 @@ export class UserController {
     return await this.userService.login(body);
   }
 
+  @Get(':user_id')
+  async getUserById(@Param('user_id') user_id: string) {
+    return await this.userService.getUserById(+user_id);
+  }
   // 2. Update user's height and weight
   @Post('measurements/:id')
   @HttpCode(200)
