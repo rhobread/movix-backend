@@ -1055,8 +1055,7 @@ export class WorkoutService {
           sets: we.set,
           // These values are to be filled in by the user after doing the workout:
           reps: null,
-          weight_used: null,
-          level_done: null,
+          weight_used: null
         }));
     
         return {
