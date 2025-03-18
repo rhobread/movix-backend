@@ -906,7 +906,7 @@ example output :
 }
 
 GET
-/workout/exercise-history/all/:user_id
+/workout/exercise-history/all?user_id=5&start_date=202502&end_date=202504
 example output:
 {
     "statusCode": 200,

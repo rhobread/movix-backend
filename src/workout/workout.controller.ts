@@ -94,9 +94,13 @@ export class WorkoutController {
     };
   }
 
-  @Get('exercise-history/all/:user_id')
-  async getUserExerciseHistory(@Param('user_id') user_id:string){
-    return await this.workoutService.getUserExerciseHistory(+user_id)
+  @Get('exercise-history/all')
+  async getUserExerciseHistory(
+    @Query('user_id') user_id:string,
+    @Query('start_date') start_date:string,
+    @Query('end_date') end_date:string,
+  ){
+    return await this.workoutService.getUserExerciseHistory(+user_id, start_date, end_date)
   }
 
 
