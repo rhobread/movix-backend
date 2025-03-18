@@ -904,3 +904,121 @@ example output :
         }
     ]
 }
+
+GET
+/workout/exercise-history/all/:user_id
+example output:
+{
+    "statusCode": 200,
+    "message": "success get history",
+    "data": [
+        {
+            "exercise_cd": "DRDL",
+            "exercise_name": "Dumbell Romanian Deadlift (6-8) for dumbell (20kg)",
+            "exercise_image": null,
+            "history": [
+                {
+                    "date": "Tuesday, 18th March 2025",
+                    "sets_done": 4,
+                    "reps": [
+                        12,
+                        10,
+                        11,
+                        12
+                    ],
+                    "totalDuration": 5,
+                    "weight_used": [
+                        20,
+                        20,
+                        20,
+                        20
+                    ]
+                }
+            ]
+        },
+        {
+            "exercise_cd": "LRL",
+            "exercise_name": "Reverse lunge (6-12) for dumbbell (20kg)",
+            "exercise_image": null,
+            "history": [
+                {
+                    "date": "Tuesday, 18th March 2025",
+                    "sets_done": 4,
+                    "reps": [
+                        10,
+                        11,
+                        9,
+                        10
+                    ],
+                    "totalDuration": 5,
+                    "weight_used": [
+                        20,
+                        20,
+                        20,
+                        20
+                    ]
+                }
+            ]
+        },
+        {
+            "exercise_cd": "PLU",
+            "exercise_name": "Pull up (6-12)",
+            "exercise_image": null,
+            "history": [
+                {
+                    "date": "Tuesday, 18th March 2025",
+                    "sets_done": 4,
+                    "reps": [
+                        13,
+                        12,
+                        15,
+                        20
+                    ],
+                    "totalDuration": 5
+                }
+            ]
+        },
+        {
+            "exercise_cd": "PU",
+            "exercise_name": "High one arm Push up (3-6)",
+            "exercise_image": null,
+            "history": [
+                {
+                    "date": "Tuesday, 18th March 2025",
+                    "sets_done": 4,
+                    "reps": [
+                        5,
+                        5,
+                        5,
+                        5
+                    ],
+                    "totalDuration": 4
+                }
+            ]
+        },
+        {
+            "exercise_cd": "LR",
+            "exercise_name": "Side lateral raise (5-15)",
+            "exercise_image": null,
+            "history": [
+                {
+                    "date": "Tuesday, 18th March 2025",
+                    "sets_done": 4,
+                    "reps": [
+                        8,
+                        8,
+                        8,
+                        8
+                    ],
+                    "totalDuration": 4,
+                    "weight_used": [
+                        5,
+                        5,
+                        5,
+                        5
+                    ]
+                }
+            ]
+        }
+    ]
+}

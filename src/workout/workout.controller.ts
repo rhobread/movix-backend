@@ -94,6 +94,12 @@ export class WorkoutController {
     };
   }
 
+  @Get('exercise-history/all/:user_id')
+  async getUserExerciseHistory(@Param('user_id') user_id:string){
+    return await this.workoutService.getUserExerciseHistory(+user_id)
+  }
+
+
   @Get('exercise-history')
   async getExerciseHistory(
     @Query('user_id') user_id:string,
