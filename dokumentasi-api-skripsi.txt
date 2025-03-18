@@ -625,6 +625,7 @@ example output :
         {
             "workout_exercise_id": 885,
             "name": "Dumbell Romanian Deadlift (6-8) for dumbell (20kg)",
+            "exercise_cd": "DRDL",
             "type": "weight",
             "sets": [
                 {
@@ -652,6 +653,7 @@ example output :
         {
             "workout_exercise_id": 886,
             "name": "Reverse lunge (6-12) for dumbbell (20kg)",
+            "exercise_cd": "LRL",
             "type": "weight",
             "sets": [
                 {
@@ -679,6 +681,7 @@ example output :
         {
             "workout_exercise_id": 887,
             "name": "Pull up (6-12)",
+            "exercise_cd": "PLU",
             "type": "bodyweight",
             "sets": [
                 {
@@ -702,6 +705,7 @@ example output :
         {
             "workout_exercise_id": 888,
             "name": "High one arm Push up (3-6)",
+            "exercise_cd": "PU",
             "type": "bodyweight",
             "sets": [
                 {
@@ -725,6 +729,7 @@ example output :
         {
             "workout_exercise_id": 889,
             "name": "Side lateral raise (5-15)",
+            "exercise_cd": "LR",
             "type": "weight",
             "sets": [
                 {
@@ -872,60 +877,30 @@ example output :
 }
 
 Get 
-workout/exercise-history?user_id=2&exercise_cd=LD (exercise_cd dapet dari workout/today/:user_id)
+workout/exercise-history?user_id=5&exercise_cd=DRDL (exercise_cd dapet dari workout/detail/:workout_id)
 example output :
 {
     "statusCode": 200,
-    "message": "Workout for today retrieved successfully",
-    "data": {
-        "workout_id": 179,
-        "date": "2025-03-10T02:42:55.470Z",
-        "exercises": [
-            {
-                "workout_exercise_id": 735,
-                "exercise_cd": "LD",
-                "name": "Deadlift (4-8) - (160kg)",
-                "sets": 4,
-                "reps": null,
-                "weight_used": null,
-                "level_done": null
-            },
-            {
-                "workout_exercise_id": 736,
-                "exercise_cd": "PLU",
-                "name": "Low one hand Pull up (8-12)",
-                "sets": 4,
-                "reps": null,
-                "weight_used": null,
-                "level_done": null
-            },
-            {
-                "workout_exercise_id": 737,
-                "exercise_cd": "PU",
-                "name": "Low one arm Push up (6-12)",
-                "sets": 4,
-                "reps": null,
-                "weight_used": null,
-                "level_done": null
-            },
-            {
-                "workout_exercise_id": 738,
-                "exercise_cd": "BTC",
-                "name": "One arm high bodyweight tricep extension (6-8)",
-                "sets": 4,
-                "reps": null,
-                "weight_used": null,
-                "level_done": null
-            },
-            {
-                "workout_exercise_id": 739,
-                "exercise_cd": "BBC",
-                "name": "bodyweight bicep curl",
-                "sets": 4,
-                "reps": null,
-                "weight_used": null,
-                "level_done": null
-            }
-        ]
-    }
+    "message": "this users history get sucessfully",
+    "data": [
+        {
+            "date": "Tuesday, 18th March 2025",
+            "exercise_name": "Dumbell Romanian Deadlift (6-8) for dumbell (20kg)",
+            "exercise_image": null,
+            "sets_done": 4,
+            "reps": [
+                12,
+                10,
+                11,
+                12
+            ],
+            "totalDuration": 5,
+            "weight_used": [
+                20,
+                20,
+                20,
+                20
+            ]
+        }
+    ]
 }
