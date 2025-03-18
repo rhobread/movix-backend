@@ -25,8 +25,10 @@ export class WorkoutController {
     return await this.workoutService.getUserWorkouts(+user_id)
   }
 
-  @Get('detail/:workout_id')
-  async getWorkoutDetail(@Param('workout_id') workout_id:string){
+  @Get('detail/:workout_id/')
+  async getWorkoutDetail(
+    @Param('workout_id') workout_id:string
+  ){
     return await this.workoutService.getWorkoutById(+workout_id)
   }
 
@@ -53,12 +55,12 @@ export class WorkoutController {
   @Post('generate/:user_id')
   @HttpCode(200)
   async generateWorkout(@Param('user_id') user_id: string) {
-    return await this.workoutService.makeWorkoutPlanForUser(+user_id)
+    return await this.workoutService.generateWorkoutPlan(+user_id)
   }
   @Post('generate-v2/:user_id')
   @HttpCode(200)
   async generateWorkoutV2(@Param('user_id') user_id: string) {
-    return await this.workoutService.generateWorkoutPlan(+user_id)
+    return await this.workoutService.makeWorkoutPlanForUser(+user_id)
   }
 
   @Post('create')
