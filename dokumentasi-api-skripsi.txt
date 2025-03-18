@@ -619,12 +619,13 @@ workout/detail/:workout_id (ganti id workoutnya, dari output yg di atas tuh ada 
 example output :
 {
     "user_id": null,
-    "workout_id": 44,
-    "date": "2025-03-05T04:57:59.801Z",
+    "workout_id": 229,
+    "date": "2025-03-18T06:31:39.255Z",
     "exercises": [
         {
-            "workout_exercise_id": 203,
-            "name": "Deadlift (4-8) - (140kg)",
+            "workout_exercise_id": 885,
+            "name": "Dumbell Romanian Deadlift (6-8) for dumbell (20kg)",
+            "type": "weight",
             "sets": [
                 {
                     "set_number": 1,
@@ -638,14 +639,20 @@ example output :
                 },
                 {
                     "set_number": 3,
+                    "reps": null,
+                    "weight_used": null
+                },
+                {
+                    "set_number": 4,
                     "reps": null,
                     "weight_used": null
                 }
             ]
         },
         {
-            "workout_exercise_id": 204,
-            "name": "Low one arm Push up (3-6)",
+            "workout_exercise_id": 886,
+            "name": "Reverse lunge (6-12) for dumbbell (20kg)",
+            "type": "weight",
             "sets": [
                 {
                     "set_number": 1,
@@ -659,56 +666,66 @@ example output :
                 },
                 {
                     "set_number": 3,
+                    "reps": null,
+                    "weight_used": null
+                },
+                {
+                    "set_number": 4,
                     "reps": null,
                     "weight_used": null
                 }
             ]
         },
         {
-            "workout_exercise_id": 205,
-            "name": "High one hand Pull up (6-8)",
+            "workout_exercise_id": 887,
+            "name": "Pull up (6-12)",
+            "type": "bodyweight",
             "sets": [
                 {
                     "set_number": 1,
-                    "reps": null,
-                    "weight_used": null
+                    "reps": null
                 },
                 {
                     "set_number": 2,
-                    "reps": null,
-                    "weight_used": null
+                    "reps": null
                 },
                 {
                     "set_number": 3,
-                    "reps": null,
-                    "weight_used": null
+                    "reps": null
+                },
+                {
+                    "set_number": 4,
+                    "reps": null
                 }
             ]
         },
         {
-            "workout_exercise_id": 206,
-            "name": "Barbell Romanian Deadlift (4-8) - (80 kg)",
+            "workout_exercise_id": 888,
+            "name": "High one arm Push up (3-6)",
+            "type": "bodyweight",
             "sets": [
                 {
                     "set_number": 1,
-                    "reps": null,
-                    "weight_used": null
+                    "reps": null
                 },
                 {
                     "set_number": 2,
-                    "reps": null,
-                    "weight_used": null
+                    "reps": null
                 },
                 {
                     "set_number": 3,
-                    "reps": null,
-                    "weight_used": null
+                    "reps": null
+                },
+                {
+                    "set_number": 4,
+                    "reps": null
                 }
             ]
         },
         {
-            "workout_exercise_id": 207,
-            "name": "High one arm Push up (6-12)",
+            "workout_exercise_id": 889,
+            "name": "Side lateral raise (5-15)",
+            "type": "weight",
             "sets": [
                 {
                     "set_number": 1,
@@ -722,6 +739,11 @@ example output :
                 },
                 {
                     "set_number": 3,
+                    "reps": null,
+                    "weight_used": null
+                },
+                {
+                    "set_number": 4,
                     "reps": null,
                     "weight_used": null
                 }
@@ -751,185 +773,98 @@ example output :
     "message": "User progress retrieved successfully",
     "data": [
         {
-            "date": "Monday, 10th March 2025",
+            "date": "Tuesday, 18th March 2025",
             "exercises": [
                 {
-                    "name": "Deadlift (4-8) - (160kg)",
+                    "workout_exercise_id": 102,
+                    "name": "Dumbell Romanian Deadlift (6-8) for dumbell (20kg)",
                     "reps": [
-                        7,
-                        7,
-                        6
-                    ],
-                    "weight_used": [
-                        160,
-                        160,
-                        160
-                    ],
-                    "musclesHit": [
-                        "quads",
-                        "hamstring",
-                        "mid back"
-                    ],
-                    "totalDuration": 8
-                },
-                {
-                    "name": "Low one hand Pull up (8-12)",
-                    "reps": [
-                        13,
-                        13,
-                        13
-                    ],
-                    "weight_used": [
-                        null,
-                        null,
-                        null
-                    ],
-                    "musclesHit": [
-                        "lats",
-                        "biceps",
-                        "mid back"
-                    ],
-                    "totalDuration": 5
-                },
-                {
-                    "name": "Low one arm Push up (6-12)",
-                    "reps": [
-                        11,
+                        12,
                         10,
-                        11
-                    ],
-                    "weight_used": [
-                        null,
-                        null,
-                        null
-                    ],
-                    "musclesHit": [
-                        "chest",
-                        "triceps"
-                    ],
-                    "totalDuration": 4
-                },
-                {
-                    "name": "One arm high bodyweight tricep extension (6-8)",
-                    "reps": [
-                        9,
-                        7,
-                        6
-                    ],
-                    "weight_used": [
-                        null,
-                        null,
-                        null
-                    ],
-                    "musclesHit": [
-                        "triceps"
-                    ],
-                    "totalDuration": 5
-                },
-                {
-                    "name": "bodyweight bicep curl",
-                    "reps": [
-                        8,
-                        7,
-                        6
-                    ],
-                    "weight_used": [
-                        null,
-                        null,
-                        null
-                    ],
-                    "musclesHit": [
-                        "biceps"
-                    ],
-                    "totalDuration": 4
-                }
-            ]
-        },
-        {
-            "date": "Monday, 3rd March 2025",
-            "exercises": [
-                {
-                    "name": "Pull up (3-6)",
-                    "reps": [
-                        8
-                    ],
-                    "weight_used": [
-                        null
-                    ],
-                    "musclesHit": [
-                        "lats",
-                        "biceps",
-                        "mid back"
-                    ],
-                    "totalDuration": 5
-                },
-                {
-                    "name": "Deadlift (4-8) - (20kg)",
-                    "reps": [
-                        9
-                    ],
-                    "weight_used": [
-                        30
-                    ],
-                    "musclesHit": [
-                        "quads",
-                        "hamstring",
-                        "mid back"
-                    ],
-                    "totalDuration": 8
-                },
-                {
-                    "name": "Knee Push up (3-12)",
-                    "reps": [
-                        13
-                    ],
-                    "weight_used": [
-                        null
-                    ],
-                    "musclesHit": [
-                        "chest",
-                        "triceps"
-                    ],
-                    "totalDuration": 4
-                },
-                {
-                    "name": "Unilateral Romanian Deadlift (6-12) - no equipment",
-                    "reps": [
-                        11
-                    ],
-                    "weight_used": [
-                        null
+                        11,
+                        12
                     ],
                     "musclesHit": [
                         "hamstring"
                     ],
-                    "totalDuration": 5
+                    "totalDuration": 5,
+                    "weight_used": [
+                        20,
+                        20,
+                        20,
+                        20
+                    ]
                 },
                 {
-                    "name": "Reverse lunge (6-12)",
+                    "workout_exercise_id": 53,
+                    "name": "Reverse lunge (6-12) for dumbbell (20kg)",
                     "reps": [
+                        10,
+                        11,
+                        9,
                         10
-                    ],
-                    "weight_used": [
-                        null
                     ],
                     "musclesHit": [
                         "quads"
                     ],
+                    "totalDuration": 5,
+                    "weight_used": [
+                        20,
+                        20,
+                        20,
+                        20
+                    ]
+                },
+                {
+                    "workout_exercise_id": 2,
+                    "name": "Pull up (6-12)",
+                    "reps": [
+                        13,
+                        12,
+                        15,
+                        20
+                    ],
+                    "musclesHit": [
+                        "lats",
+                        "biceps",
+                        "mid back"
+                    ],
                     "totalDuration": 5
                 },
                 {
-                    "name": "Barbell Romanian Deadlift (4-8) - (20 kg)",
+                    "workout_exercise_id": 13,
+                    "name": "High one arm Push up (3-6)",
                     "reps": [
+                        5,
+                        5,
+                        5,
                         5
                     ],
-                    "weight_used": [
-                        30
+                    "musclesHit": [
+                        "chest",
+                        "triceps"
+                    ],
+                    "totalDuration": 4
+                },
+                {
+                    "workout_exercise_id": 23,
+                    "name": "Side lateral raise (5-15)",
+                    "reps": [
+                        8,
+                        8,
+                        8,
+                        8
                     ],
                     "musclesHit": [
-                        "hamstring"
+                        "side delts"
                     ],
-                    "totalDuration": 8
+                    "totalDuration": 4,
+                    "weight_used": [
+                        5,
+                        5,
+                        5,
+                        5
+                    ]
                 }
             ]
         }
