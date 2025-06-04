@@ -106,6 +106,18 @@ export class ExerciseService {
     return exercise;
   }
 
+  async getExerciseDescription(id: number){
+    const exercise = await this.databaseService.exercise.findUnique({
+      where: {id}
+    })
+
+    return {
+      statusCode: 200,
+      message: "success",
+      data: exercise
+    }
+  }
+
   // New: Update an exercise (only allowed fields)
   async updateExercise(id: number, updateExerciseDto: Record<any,any>): Promise<any> {
     // Ensure the exercise exists

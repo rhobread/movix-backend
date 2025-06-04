@@ -379,14 +379,23 @@ export class WorkoutService {
 
     // 9. Dummy load calculation: for weight, constant; for bodyweight, use the selected exercise's level.
     const calculateLoad = (exercise: any) => {
-      if (exercise.types === 'weight') return { weight: 10 };
-      if (exercise.types === 'bodyweight')
+      if (exercise.types === 'weight') {
+        // Try to match the second parenthesis group ending in "kg"
+        // e.g. "– (80 kg)" ➔ match[1] === "80"
+        const m = exercise.name.match(/-\s*\(\s*(\d+(?:\.\d+)?)\s*kg\s*\)\s*$/i);
+        const weight = m ? parseFloat(m[1]) : 10;
+        return { weight };
+      }
+    
+      if (exercise.types === 'bodyweight') {
         return {
           level:
             exercise.group && exercise.group.length > 0
               ? exercise.group[0].difficulty
               : null,
         };
+      }
+    
       return {};
     };
 
@@ -424,7 +433,11 @@ export class WorkoutService {
         },
       });
     }
-    return workoutPerWeekRecord;
+    return {
+      statusCode: 200,
+      message: "success",
+      data: workoutPerWeekRecord
+    };
   }
 
   async generateWorkoutPlan(userId: number): Promise<any> {
@@ -729,16 +742,26 @@ export class WorkoutService {
 
     // 9. Dummy load calculation: for weight, constant; for bodyweight, use the exercise's group difficulty.
     const calculateLoad = (exercise: any) => {
-      if (exercise.types === 'weight') return { weight: 10 };
-      if (exercise.types === 'bodyweight')
+      if (exercise.types === 'weight') {
+        // Try to match the second parenthesis group ending in "kg"
+        // e.g. "– (80 kg)" ➔ match[1] === "80"
+        const m = exercise.name.match(/-\s*\(\s*(\d+(?:\.\d+)?)\s*kg\s*\)\s*$/i);
+        const weight = m ? parseFloat(m[1]) : 10;
+        return { weight };
+      }
+    
+      if (exercise.types === 'bodyweight') {
         return {
           level:
             exercise.group && exercise.group.length > 0
               ? exercise.group[0].difficulty
               : null,
         };
+      }
+    
       return {};
     };
+    
 
     // 10. Save the weekly workout plan into the database.
     const savedWorkouts = [];
@@ -774,7 +797,11 @@ export class WorkoutService {
         },
       });
     }
-    return workoutPerWeekRecord;
+    return {
+      statusCode: 200,
+      message: "success",
+      data: workoutPerWeekRecord
+    };
   }
 
   async getWorkoutPlan(workout_per_week_id: number) {
@@ -1103,38 +1130,34 @@ export class WorkoutService {
   }
 
   async getProgressByUser(userId: number): Promise<any> {
-    const progressRecords =
-      await this.databaseService.workout_progress.findMany({
-        where: { user_id: userId },
-        include: {
-          workout: true,
-          exerciseProgress: {
-            include: {
-              workout_exercise: {
-                include: {
-                  exercise: {
-                    include: {
-                      muscles: { include: { muscle: true } },
-                      // If needed, include group info as well:
-                      group: { include: { group: true } },
-                    },
+    const progressRecords = await this.databaseService.workout_progress.findMany({
+      where: { user_id: userId },
+      include: {
+        workout: true,
+        exerciseProgress: {
+          include: {
+            workout_exercise: {
+              include: {
+                exercise: {
+                  include: {
+                    muscles: { include: { muscle: true } },
+                    group: { include: { group: true } },
                   },
                 },
               },
             },
           },
         },
-        orderBy: {
-          date: 'desc',
-        },
-      });
-
-    // Format the output.
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    });
+  
     const formatted = progressRecords.map((wp) => {
-      // Format the date (e.g., "Monday, 2nd February 2025")
       const formattedDate = moment(wp.date).format('dddd, Do MMMM YYYY');
-
-      // Group exerciseProgress by workout_exercise_id.
+  
+      // Group by workout_exercise_id
       const groupMap = new Map<
         number,
         {
@@ -1142,7 +1165,7 @@ export class WorkoutService {
           records: { set: number; reps: number; weight_used: number | null }[];
         }
       >();
-
+  
       wp.exerciseProgress.forEach((ep) => {
         const weId = ep.workout_exercise_id;
         if (!groupMap.has(weId)) {
@@ -1151,78 +1174,91 @@ export class WorkoutService {
             records: [],
           });
         }
-        groupMap.get(weId)?.records.push({
+        groupMap.get(weId)!.records.push({
           set: ep.sets,
           reps: ep.reps,
           weight_used: ep.weight_used ?? null,
         });
       });
-
-      // Process each group.
-      const exercises = Array.from(groupMap.values()).map((group) => {
-        // Sort the records by the set number.
-        group.records.sort((a, b) => a.set - b.set);
-        const reps = group.records.map((r) => r.reps);
-        const weightUsed = group.records.map((r) => r.weight_used);
-        // Calculate totalDuration using the first set's data (assuming same duration for each set).
-        const duration = group.exercise.duration || 0;
-        const restTime = duration
-          ? this.getRestTime(group.exercise.intensity)
-          : 0;
-        const totalDuration = duration + restTime;
-        // Extract muscle names from exercise.muscles.
-        const musclesHit = group.exercise.muscles.map(
-          (em: any) => em.muscle.name,
-        );
-
-        // Build the output. For bodyweight exercises, omit weight_used.
-        const exerciseOutput: any = {
-          name: group.exercise.name,
-          reps,
-          musclesHit,
-          totalDuration,
-        };
-        if (
-          group.exercise.types &&
-          group.exercise.types.toLowerCase() !== 'bodyweight'
-        ) {
-          exerciseOutput.weight_used = weightUsed;
-        }
-        return {
-          workout_exercise_id: group.exercise.id, // assuming exercise id is used as identifier here
-          ...exerciseOutput,
-        };
-      });
-
+  
+      // const exercises = Array.from(groupMap.values()).map((group) => {
+      //   group.records.sort((a, b) => a.set - b.set);
+      //   const reps = group.records.map((r) => r.reps);
+      //   const weightUsed = group.records.map((r) => r.weight_used);
+      //   const duration = group.exercise.duration || 0;
+      //   const restTime = duration ? this.getRestTime(group.exercise.intensity) : 0;
+      //   const totalDuration = duration + restTime;
+      //   const musclesHit = group.exercise.muscles.map((em: any) => em.muscle.name);
+  
+      //   const out: any = {
+      //     workout_exercise_id: group.exercise.id,
+      //     name: group.exercise.name,
+      //     reps,
+      //     musclesHit,
+      //     totalDuration,
+      //   };
+      //   if (
+      //     group.exercise.types &&
+      //     group.exercise.types.toLowerCase() !== 'bodyweight'
+      //   ) {
+      //     out.weight_used = weightUsed;
+      //   }
+      //   return out;
+      // });
+  
       return {
+        workout_id: wp.workout_id,
         date: formattedDate,
-        exercises,
+        //exercises,
       };
     });
-
+  
     return formatted;
   }
+  
 
   async getUserWorkouts(userId: number): Promise<any> {
+    // 1) skip any pending workouts older than yesterday
     const yesterdayEnd = moment().subtract(1, 'days').endOf('day').toDate();
     await this.databaseService.workout.updateMany({
-      data: {
-        status: 'skipped',
-      },
+      data: { status: 'skipped' },
       where: {
         status: 'pending',
-        date: {
-          lte: yesterdayEnd,
-        },
+        date: { lte: yesterdayEnd },
         perWeek: {
           some: {
-            workoutperweek: {
-              user_id: userId,
-            },
+            workoutperweek: { user_id: userId },
           },
         },
       },
     });
+  
+    // ────────────────────────────────────────────────────────────────────────────
+    // 2) check for any workouts scheduled over the next 7 days
+    const now = moment().toDate();
+    const weekEnd = moment().add(7, 'days').endOf('day').toDate();
+  
+    const upcomingCount = await this.databaseService.workout.count({
+      where: {
+        date: {
+          gte: now,
+          lte: weekEnd,
+        },
+        perWeek: {
+          some: {
+            workoutperweek: { user_id: userId },
+          },
+        },
+      },
+    });
+  
+    // 3) if none, generate a fresh 7-day plan
+    if (upcomingCount === 0) {
+      await this.generateWorkoutPlan(userId);
+    }
+    // ────────────────────────────────────────────────────────────────────────────
+  
+    // now fetch all workouts (old and new)...
     const wpwRecords = await this.databaseService.workoutperweek.findMany({
       where: { user_id: userId },
       include: {
@@ -1247,84 +1283,77 @@ export class WorkoutService {
         },
       },
     });
-
-    // Flatten workouts from all workoutperweek records.
+  
+    // flatten, sort, format, etc.
     let workouts = [];
     wpwRecords.forEach((wpw) => {
-      wpw.workouts.forEach((wEntry) => {
-        workouts.push(wEntry.workout);
-      });
+      wpw.workouts.forEach((wEntry) => workouts.push(wEntry.workout));
     });
     if (workouts.length === 0)
-      throw new NotFoundException(
-        `No workouts found for user with id ${userId}`,
-      );
-
-    // Sort workouts by date ascending.
+      throw new NotFoundException(`No workouts found for user with id ${userId}`);
+  
     workouts.sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
-
+  
     const formattedWorkouts = [];
     const musclePoints: Record<string, number> = {};
-
+  
     for (const workout of workouts) {
-      // Format the workout date using Moment.js.
       const formattedDate = moment(workout.date).format('dddd, Do MMMM YYYY');
-      const status = workout.status;
-      const exercisesArr = [];
       let dayTotalDuration = 0;
-
-      // Iterate over each workout_exercise record.
+      const exercisesArr = [];
+  
       for (const we of workout.exercises) {
         const ex = we.exercise;
         const duration = ex.duration || 0;
         const restTime = duration ? this.getRestTime(ex.intensity) : 0;
         const totalDuration = (duration + restTime) * we.set;
         dayTotalDuration += totalDuration;
-
-        // Retrieve muscles hit.
+  
         const musclesHit = ex.muscles.map((em: any) => {
           const mName = em.muscle.name;
           musclePoints[mName] = (musclePoints[mName] || 0) + we.set * em.rating;
           return mName;
         });
-
-        // Get group info from the first excercise_group record if available.
+  
         let groupInfo = null;
-        if (ex.group && ex.group.length > 0 && ex.group[0].group) {
+        if (ex.group?.length) {
           groupInfo = {
             name: ex.group[0].group.name,
             difficulty: ex.group[0].difficulty || null,
           };
         }
-
+  
         exercisesArr.push({
           workout_exercise_id: we.id,
           name: ex.name,
           sets: we.set,
           reps: we.reps,
           weight: we.weight,
-          totalDuration: totalDuration,
-          musclesHit: musclesHit,
+          totalDuration,
+          musclesHit,
           group: groupInfo,
         });
       }
-
+  
       formattedWorkouts.push({
         workout_id: workout.id,
         date: formattedDate,
-        status: status,
-        exercises: exercisesArr,
+        status: workout.status,
+        // exercises: exercisesArr,  // you can re-enable if you want to surface them
+        musclePoints,
         totalWorkoutDuration: dayTotalDuration,
       });
     }
-
+  
     return {
-      workouts: formattedWorkouts,
-      musclePoints: musclePoints,
+      statusCode: 200,
+      message: 'success',
+      data: formattedWorkouts,
     };
   }
+  
 
   async getWorkoutById(workoutId: number): Promise<any> {
     const workout = await this.databaseService.workout.findUnique({
@@ -1359,13 +1388,15 @@ export class WorkoutService {
         const setEntry: any = { set_number: i + 1, reps: null };
         // Only include weight_used if the exercise type is "weight"
         if (ex.types && ex.types.toLowerCase() === 'weight') {
-          setEntry.weight_used = null;
+          setEntry.weight_used = we.weight;
         }
         return setEntry;
       });
       return {
         workout_exercise_id: we.id,
+        exercise_id: we.exercise_id,
         name: ex.name,
+        image: ex.image,
         exercise_cd: ex.exercise_cd,
         type: ex.types,
         sets: setsArray,
@@ -1373,10 +1404,14 @@ export class WorkoutService {
     });
 
     return {
-      user_id: null,
-      workout_id: workout.id,
-      date: outputDate,
-      exercises: exercisesDetailed,
+      statusCode: 200,
+      message : "success",
+      data: {
+        user_id: null,
+        workout_id: workout.id,
+        date: outputDate,
+        exercises: exercisesDetailed,
+      }
     };
   }
 
@@ -1535,6 +1570,7 @@ export class WorkoutService {
           reps: ep.reps,
           weight_used: ep.weight_used ?? null,
           exercise: ep.workout_exercise.exercise,
+          exercise_id: ep.workout_exercise.exercise.id,
           exercise_cd: ep.workout_exercise.exercise.exercise_cd,
         });
       });
@@ -1621,6 +1657,7 @@ export class WorkoutService {
   
       // Push exercise history into main history array
       history.push({
+        exercise_id: records[0].exercise_id,
         exercise_cd,
         exercise_name: records[0].exercise.name,
         exercise_image: records[0].exercise.image || null,
@@ -1632,6 +1669,96 @@ export class WorkoutService {
       statusCode: 200,
       message: "success get history",
       data: history,
+    };
+  }
+  
+  async getHistoryDetail(workout_id: number): Promise<any> {
+    // 1) load the scheduled workout + its exercises
+    const workout = await this.databaseService.workout.findUnique({
+      where: { id: workout_id },
+      include: {
+        exercises: {
+          include: {
+            exercise: {
+              include: {
+                // we only need duration/intensity to calculate restTime
+                group: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!workout) {
+      throw new NotFoundException(`Workout ${workout_id} not found`);
+    }
+  
+    // 2) load the one time the user actually did this workout
+    const progress = await this.databaseService.workout_progress.findFirst({
+      where: { workout_id },
+      include: { exerciseProgress: true },
+    });
+  
+    // pick date & user_id from progress if it exists, else fall back to scheduled
+    const outputDate = progress?.date ?? workout.date;
+    const userId = progress?.user_id ?? null;
+  
+    // helper to get rest time
+    const getRestTime = (intensity: string): number => {
+      switch (intensity.toLowerCase()) {
+        case 'low': return 1;
+        case 'medium': return 2;
+        case 'high': return 4;
+        case 'very high': case 'very_high': return 6;
+        default: return 0;
+      }
+    };
+  
+    // 3) for each assigned workout_exercise, build its sets array
+    const exercises = workout.exercises.map(we => {
+      const ex = we.exercise;
+      const totalSets = we.set;
+      // for quick lookup of recorded sets:
+      const records = new Map<number, typeof progress.exerciseProgress[0]>();
+      if (progress) {
+        for (const ep of progress.exerciseProgress) {
+          if (ep.workout_exercise_id === we.id) {
+            records.set(ep.sets, ep);
+          }
+        }
+      }
+  
+      // now build an array of length totalSets, pulling from records if present
+      const sets = Array.from({ length: totalSets }, (_, idx) => {
+        const setNumber = idx + 1;
+        const rec = records.get(setNumber);
+        const entry: any = { set_number: setNumber, reps: rec ? rec.reps : null };
+        // only include weight_used if this is a weight exercise
+        if (ex.types?.toLowerCase() === 'weight') {
+          entry.weight_used = rec ? rec.weight_used : we.weight;
+        }
+        return entry;
+      });
+  
+      return {
+        workout_exercise_id: we.id,
+        exercise_id: we.exercise_id,
+        exercise_cd: ex.exercise_cd,
+        name: ex.name,
+        image: ex.image,
+        sets,
+      };
+    });
+  
+    return {
+      statusCode:200,
+      message: "success",
+      data:{      
+        user_id: userId,
+        workout_id: workout.id,
+        date: outputDate,
+        exercises
+      }
     };
   }
   

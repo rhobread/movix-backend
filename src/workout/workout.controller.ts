@@ -31,6 +31,13 @@ export class WorkoutController {
   ){
     return await this.workoutService.getWorkoutById(+workout_id)
   }
+  
+  @Get('history/detail/:workout_id')
+  async getHistoryDetail(
+    @Param('workout_id') workout_id:string
+  ){
+    return await this.workoutService.getHistoryDetail(+workout_id)
+  }
 
   @Get('equipment/get/:user_id')
   async getEquipment(@Param('user_id') user_id: string) {

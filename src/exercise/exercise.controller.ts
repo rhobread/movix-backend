@@ -38,6 +38,10 @@ export class ExerciseController {
     return this.exerciseService.findOne(Number(id));
   }
 
+  @Get('description/:id')
+  async getExerciseDescription(@Param('id') id: number){
+    return this.exerciseService.getExerciseDescription(Number(id));
+  }
   // Update an exercise (only allowed fields)
   @Patch(':id')
   async updateExercise(
