@@ -36,7 +36,7 @@ export class UserController {
   @HttpCode(200)
   async insertMeasurements(
     @Param('id') id: string,
-    @Body() body: { height: number; weight: number },
+    @Body() body: { height: number; weight: number, gender: string },
   ) {
     const updatedUser = await this.userService.insertUserMeasurements(
       +id,
@@ -52,7 +52,7 @@ export class UserController {
   @HttpCode(200)
   async addMeasurements(
     @Param('id') id: string,
-    @Body() body: { height: number; weight: number },
+    @Body() body: { height: number; weight: number, gender: string },
   ) {
     const updatedUser = await this.userService.insertUserMeasurements(
       +id,

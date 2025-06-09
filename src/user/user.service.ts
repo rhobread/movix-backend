@@ -113,7 +113,7 @@ export class UserService {
   // 2. Update user's height and weight
   async insertUserMeasurements(
     userId: number,
-    measurements: { height: number; weight: number }
+    measurements: { height: number; weight: number, gender: string }
   ): Promise<any> {
     // Update user's height and weight.
     const updatedUser = await this.prisma.users.updateManyAndReturn({
@@ -135,6 +135,10 @@ export class UserService {
     else if (bmi < 18.5) newLevel = 3;
     else if (bmi >= 18.5 && bmi < 25) newLevel = 4;
     else newLevel = 1; // fallback if BMI doesn't match any category
+
+    if (measurements.gender === "female" && newLevel > 1){
+      newLevel -= 1
+    }
   
     // Update (or create) the user's group levels for all 8 groups.
     // Ensure your user_group_level model has a composite unique constraint on (user_id, group_id).
