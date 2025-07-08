@@ -21,8 +21,11 @@ export class WorkoutController {
   }
 
   @Get('user/:user_id')
-  async getWorkoutByUser(@Param('user_id') user_id:string){
-    return await this.workoutService.getUserWorkouts(+user_id)
+  async getWorkoutByUser(
+    @Param('user_id') user_id:string,
+    @Query('date') date: string
+  ){
+    return await this.workoutService.getUserWorkouts(+user_id, date)
   }
 
   @Get('detail/:workout_id/')
@@ -61,8 +64,11 @@ export class WorkoutController {
 
   @Post('generate/:user_id')
   @HttpCode(200)
-  async generateWorkout(@Param('user_id') user_id: string) {
-    return await this.workoutService.generateWorkoutPlan(+user_id)
+  async generateWorkout(
+    @Param('user_id') user_id: string,
+    @Query('date') date: string
+  ) {
+    return await this.workoutService.generateWorkoutPlan(+user_id, date)
   }
   @Post('generate-v2/:user_id')
   @HttpCode(200)
@@ -92,8 +98,11 @@ export class WorkoutController {
   }
 
   @Get('today/:userId')
-  async getWorkoutForToday(@Param('userId') userId: string) {
-    const workout = await this.workoutService.getWorkoutForToday(+userId);
+  async getWorkoutForToday(
+    @Param('userId') userId: string,
+    @Query('date') date: string
+  ) {
+    const workout = await this.workoutService.getWorkoutForToday(+userId, date);
     return {
       statusCode: 200,
       message: 'Workout for today retrieved successfully',

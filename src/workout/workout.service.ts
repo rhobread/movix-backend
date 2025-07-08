@@ -21,7 +21,7 @@ interface ExtendedExercise {
 
 @Injectable()
 export class WorkoutService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly databaseService: DatabaseService) { }
 
   async getAllUser() {
     try {
@@ -386,7 +386,7 @@ export class WorkoutService {
         const weight = m ? parseFloat(m[1]) : 10;
         return { weight };
       }
-    
+
       if (exercise.types === 'bodyweight') {
         return {
           level:
@@ -395,7 +395,7 @@ export class WorkoutService {
               : null,
         };
       }
-    
+
       return {};
     };
 
@@ -440,7 +440,7 @@ export class WorkoutService {
     };
   }
 
-  async generateWorkoutPlan(userId: number): Promise<any> {
+  async generateWorkoutPlan(userId: number, date: string | null = null): Promise<any> {
     // 1. Fetch the user with their equipments, availabilities, and group levels.
     const user = await this.databaseService.users.findUnique({
       where: { id: userId },
@@ -491,9 +491,14 @@ export class WorkoutService {
       }
     });
 
+    // Determine the reference "today" moment based on the optional date parameter.
+    const baseMoment = date
+      ? moment(date, 'YYYYMMDD').startOf('day')
+      : moment();
+
     // *** Delete all workouts for the user from tomorrow until 7 days later ***
-    const tomorrow = moment().add(1, 'days').startOf('day').toDate();
-    const sevenDaysLater = moment().add(7, 'days').endOf('day').toDate();
+    const tomorrow = baseMoment.clone().add(1, 'days').startOf('day').toDate();
+    const sevenDaysLater = baseMoment.clone().add(7, 'days').endOf('day').toDate();
     const workoutsToDelete = await this.databaseService.workout.findMany({
       where: {
         date: { gte: tomorrow, lte: sevenDaysLater },
@@ -731,8 +736,8 @@ export class WorkoutService {
         return priA - priB;
       });
 
-      let workoutDate = moment().day(daysAvailable[i]);
-      if (workoutDate.isBefore(moment(), 'day')) workoutDate.add(7, 'days');
+      let workoutDate = baseMoment.clone().day(daysAvailable[i]);
+      if (workoutDate.isBefore(baseMoment, 'day')) workoutDate.add(7, 'days');
       workoutsPlan.push({
         date: workoutDate.toDate(),
         exercises: dayExercises,
@@ -749,7 +754,7 @@ export class WorkoutService {
         const weight = m ? parseFloat(m[1]) : 10;
         return { weight };
       }
-    
+
       if (exercise.types === 'bodyweight') {
         return {
           level:
@@ -758,10 +763,9 @@ export class WorkoutService {
               : null,
         };
       }
-    
+
       return {};
     };
-    
 
     // 10. Save the weekly workout plan into the database.
     const savedWorkouts = [];
@@ -803,6 +807,7 @@ export class WorkoutService {
       data: workoutPerWeekRecord
     };
   }
+
 
   async getWorkoutPlan(workout_per_week_id: number) {
     // Retrieve the workout week, including the workouts and nested exercise details.
@@ -1071,9 +1076,13 @@ export class WorkoutService {
     return newProgress;
   }
 
-  async getWorkoutForToday(userId: number): Promise<any> {
-    const startOfToday = moment().startOf('day').toDate();
-    const endOfToday = moment().endOf('day').toDate();
+  async getWorkoutForToday(userId: number, date: string | null = null): Promise<any> {
+  const baseMoment = date
+    ? moment(date, 'YYYYMMDD').startOf('day')
+    : moment();    
+
+    const startOfToday = baseMoment.clone().startOf('day').toDate();
+    const endOfToday = baseMoment.clone().endOf('day').toDate();
 
     // const startOfToday = moment('20250303').toDate()
     // const endOfToday = moment('20250304').toDate()
@@ -1153,10 +1162,10 @@ export class WorkoutService {
         date: 'desc',
       },
     });
-  
+
     const formatted = progressRecords.map((wp) => {
       const formattedDate = moment(wp.date).format('dddd, Do MMMM YYYY');
-  
+
       // Group by workout_exercise_id
       const groupMap = new Map<
         number,
@@ -1165,7 +1174,7 @@ export class WorkoutService {
           records: { set: number; reps: number; weight_used: number | null }[];
         }
       >();
-  
+
       wp.exerciseProgress.forEach((ep) => {
         const weId = ep.workout_exercise_id;
         if (!groupMap.has(weId)) {
@@ -1180,7 +1189,7 @@ export class WorkoutService {
           weight_used: ep.weight_used ?? null,
         });
       });
-  
+
       // const exercises = Array.from(groupMap.values()).map((group) => {
       //   group.records.sort((a, b) => a.set - b.set);
       //   const reps = group.records.map((r) => r.reps);
@@ -1189,7 +1198,7 @@ export class WorkoutService {
       //   const restTime = duration ? this.getRestTime(group.exercise.intensity) : 0;
       //   const totalDuration = duration + restTime;
       //   const musclesHit = group.exercise.muscles.map((em: any) => em.muscle.name);
-  
+
       //   const out: any = {
       //     workout_exercise_id: group.exercise.id,
       //     name: group.exercise.name,
@@ -1205,21 +1214,22 @@ export class WorkoutService {
       //   }
       //   return out;
       // });
-  
+
       return {
         workout_id: wp.workout_id,
         date: formattedDate,
         //exercises,
       };
     });
-  
+
     return formatted;
   }
-  
 
-  async getUserWorkouts(userId: number): Promise<any> {
+
+  async getUserWorkouts(userId: number, date: string | null = null): Promise<any> {
+    const baseMoment = date ? moment(date, 'YYYYMMDD').startOf('day') : moment();
     // 1) skip any pending workouts older than yesterday
-    const yesterdayEnd = moment().subtract(1, 'days').endOf('day').toDate();
+    const yesterdayEnd = baseMoment.clone().subtract(1, 'days').endOf('day').toDate();
     await this.databaseService.workout.updateMany({
       data: { status: 'skipped' },
       where: {
@@ -1232,12 +1242,12 @@ export class WorkoutService {
         },
       },
     });
-  
+
     // ────────────────────────────────────────────────────────────────────────────
     // 2) check for any workouts scheduled over the next 7 days
-    const now = moment().toDate();
-    const weekEnd = moment().add(7, 'days').endOf('day').toDate();
-  
+    const now = baseMoment.clone().toDate();
+    const weekEnd = baseMoment.clone().add(7, 'days').endOf('day').toDate();
+
     const upcomingCount = await this.databaseService.workout.count({
       where: {
         date: {
@@ -1251,13 +1261,13 @@ export class WorkoutService {
         },
       },
     });
-  
+
     // 3) if none, generate a fresh 7-day plan
     if (upcomingCount === 0) {
       await this.generateWorkoutPlan(userId);
     }
     // ────────────────────────────────────────────────────────────────────────────
-  
+
     // now fetch all workouts (old and new)...
     const wpwRecords = await this.databaseService.workoutperweek.findMany({
       where: { user_id: userId },
@@ -1283,7 +1293,7 @@ export class WorkoutService {
         },
       },
     });
-  
+
     // flatten, sort, format, etc.
     let workouts = [];
     wpwRecords.forEach((wpw) => {
@@ -1291,32 +1301,32 @@ export class WorkoutService {
     });
     if (workouts.length === 0)
       throw new NotFoundException(`No workouts found for user with id ${userId}`);
-  
+
     workouts.sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
-  
+
     const formattedWorkouts = [];
     const musclePoints: Record<string, number> = {};
-  
+
     for (const workout of workouts) {
       const formattedDate = moment(workout.date).format('dddd, Do MMMM YYYY');
       let dayTotalDuration = 0;
       const exercisesArr = [];
-  
+
       for (const we of workout.exercises) {
         const ex = we.exercise;
         const duration = ex.duration || 0;
         const restTime = duration ? this.getRestTime(ex.intensity) : 0;
         const totalDuration = (duration + restTime) * we.set;
         dayTotalDuration += totalDuration;
-  
+
         const musclesHit = ex.muscles.map((em: any) => {
           const mName = em.muscle.name;
           musclePoints[mName] = (musclePoints[mName] || 0) + we.set * em.rating;
           return mName;
         });
-  
+
         let groupInfo = null;
         if (ex.group?.length) {
           groupInfo = {
@@ -1324,7 +1334,7 @@ export class WorkoutService {
             difficulty: ex.group[0].difficulty || null,
           };
         }
-  
+
         exercisesArr.push({
           workout_exercise_id: we.id,
           name: ex.name,
@@ -1336,7 +1346,7 @@ export class WorkoutService {
           group: groupInfo,
         });
       }
-  
+
       formattedWorkouts.push({
         workout_id: workout.id,
         date: formattedDate,
@@ -1346,14 +1356,14 @@ export class WorkoutService {
         totalWorkoutDuration: dayTotalDuration,
       });
     }
-  
+
     return {
       statusCode: 200,
       message: 'success',
       data: formattedWorkouts,
     };
   }
-  
+
 
   async getWorkoutById(workoutId: number): Promise<any> {
     const workout = await this.databaseService.workout.findUnique({
@@ -1405,7 +1415,7 @@ export class WorkoutService {
 
     return {
       statusCode: 200,
-      message : "success",
+      message: "success",
       data: {
         user_id: null,
         workout_id: workout.id,
@@ -1531,7 +1541,7 @@ export class WorkoutService {
     // Parse start_date and end_date into moment objects
     const startMoment = moment(start_date, "YYYYMM").startOf("month");
     const endMoment = moment(end_date, "YYYYMM").endOf("month");
-  
+
     // Retrieve all workout_progress records for the user within the date range
     const progressRecords = await this.databaseService.workout_progress.findMany({
       where: {
@@ -1559,7 +1569,7 @@ export class WorkoutService {
       },
       orderBy: { date: "asc" },
     });
-  
+
     // Flatten all exerciseProgress entries
     const matchingRecords = [];
     progressRecords.forEach((wp) => {
@@ -1575,7 +1585,7 @@ export class WorkoutService {
         });
       });
     });
-  
+
     // Group the matching records by exercise_cd.
     const groupedByExercise: Record<string, any[]> = {};
     matchingRecords.forEach((rec) => {
@@ -1584,7 +1594,7 @@ export class WorkoutService {
       }
       groupedByExercise[rec.exercise_cd].push(rec);
     });
-  
+
     // Helper to calculate rest time.
     const getRestTime = (intensity: string): number => {
       switch (intensity.toLowerCase()) {
@@ -1601,12 +1611,12 @@ export class WorkoutService {
           return 0;
       }
     };
-  
+
     // Build the output array.
     const history = [];
     for (const exercise_cd in groupedByExercise) {
       const records = groupedByExercise[exercise_cd];
-  
+
       // Group by formatted date
       const groupedByDate: Record<string, any[]> = {};
       records.forEach((rec) => {
@@ -1616,34 +1626,34 @@ export class WorkoutService {
         }
         groupedByDate[formattedDate].push(rec);
       });
-  
+
       // Process each exercise and its workout history
       const exerciseHistory = [];
       for (const dateStr in groupedByDate) {
         const dateRecords = groupedByDate[dateStr];
-  
+
         // Sort by set number (ascending).
         dateRecords.sort((a, b) => a.set - b.set);
-  
+
         // Assume all records for the same exercise_cd share the same details.
         const exerciseName = dateRecords[0].exercise.name;
         const exerciseImage = dateRecords[0].exercise.image || null;
         const sets_done = dateRecords.length;
         const repsArray = dateRecords.map((r) => r.reps);
         const weightArray = dateRecords.map((r) => r.weight_used);
-        
+
         // Calculate totalDuration per set from exercise data (same for all sets in a day).
         const duration = dateRecords[0].exercise.duration || 0;
         const restTime = duration ? getRestTime(dateRecords[0].exercise.intensity) : 0;
         const totalDuration = duration + restTime;
-        
+
         const output: any = {
           date: dateStr,
           sets_done,
           reps: repsArray,
           totalDuration, // Represents the duration per set.
         };
-  
+
         // Include weight_used only if the exercise type is "weight".
         if (
           dateRecords[0].exercise.types &&
@@ -1651,10 +1661,10 @@ export class WorkoutService {
         ) {
           output.weight_used = weightArray;
         }
-  
+
         exerciseHistory.push(output);
       }
-  
+
       // Push exercise history into main history array
       history.push({
         exercise_id: records[0].exercise_id,
@@ -1664,14 +1674,14 @@ export class WorkoutService {
         history: exerciseHistory,
       });
     }
-  
+
     return {
       statusCode: 200,
       message: "success get history",
       data: history,
     };
   }
-  
+
   async getHistoryDetail(workout_id: number): Promise<any> {
     // 1) load the scheduled workout + its exercises
     const workout = await this.databaseService.workout.findUnique({
@@ -1692,17 +1702,17 @@ export class WorkoutService {
     if (!workout) {
       throw new NotFoundException(`Workout ${workout_id} not found`);
     }
-  
+
     // 2) load the one time the user actually did this workout
     const progress = await this.databaseService.workout_progress.findFirst({
       where: { workout_id },
       include: { exerciseProgress: true },
     });
-  
+
     // pick date & user_id from progress if it exists, else fall back to scheduled
     const outputDate = progress?.date ?? workout.date;
     const userId = progress?.user_id ?? null;
-  
+
     // helper to get rest time
     const getRestTime = (intensity: string): number => {
       switch (intensity.toLowerCase()) {
@@ -1713,7 +1723,7 @@ export class WorkoutService {
         default: return 0;
       }
     };
-  
+
     // 3) for each assigned workout_exercise, build its sets array
     const exercises = workout.exercises.map(we => {
       const ex = we.exercise;
@@ -1727,7 +1737,7 @@ export class WorkoutService {
           }
         }
       }
-  
+
       // now build an array of length totalSets, pulling from records if present
       const sets = Array.from({ length: totalSets }, (_, idx) => {
         const setNumber = idx + 1;
@@ -1739,7 +1749,7 @@ export class WorkoutService {
         }
         return entry;
       });
-  
+
       return {
         workout_exercise_id: we.id,
         exercise_id: we.exercise_id,
@@ -1749,11 +1759,11 @@ export class WorkoutService {
         sets,
       };
     });
-  
+
     return {
-      statusCode:200,
+      statusCode: 200,
       message: "success",
-      data:{      
+      data: {
         user_id: userId,
         workout_id: workout.id,
         date: outputDate,
@@ -1761,7 +1771,7 @@ export class WorkoutService {
       }
     };
   }
-  
+
 
   private getRestTime(intensity: string): number {
     switch (intensity.toLowerCase()) {
