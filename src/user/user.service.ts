@@ -9,25 +9,30 @@ export class UserService {
   // 1. Create a new user (input: email, name, password)
   //    Also, assign default level 1 for all 8 groups.
   async createUser(input: { email: string; name: string; password: string }): Promise<any> {
-    console.log(input)
+    console.log(input);
+
     const existingUser = await this.prisma.users.findFirst({
-      where:{
-        email:input.email
-      }
-    })
-    if (existingUser){
+      where: {
+        email: input.email,
+      },
+    });
+
+    if (existingUser) {
       throw new BadRequestException({
-        statusCode : 400,
-        message: 'user with this Email already exists',
-        data: []
-      })
+        statusCode: 400,
+        message: 'User with this email already exists',
+        data: [],
+      });
     }
+
+    // 🔐 Encrypt the password using bcrypt
+    const hashedPassword = await bcrypt.hash(input.password, 10);
+
     const user = await this.prisma.users.create({
       data: {
         email: input.email,
         name: input.name,
-        password: input.password,
-        // Create default user_group_level records for groups 1 to 8
+        password: hashedPassword, // 🔒 Store hashed password
         level: {
           create: [
             { group_id: 1, level: 1 },
@@ -44,8 +49,12 @@ export class UserService {
         level: true,
       },
     });
-    return user;
+
+    // Optional: strip password before returning
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
+
 
   async login(body: { email: string; password: string }) {
     // 1. Fetch user by email only
