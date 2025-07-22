@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -47,31 +47,46 @@ export class UserService {
     return user;
   }
 
-  async login(body: {email:string, password:string}){
-    try {
-      const existingUser = await this.prisma.users.findFirst({
-        where : {
-          email: body.email,
-          password: body.password
-        }
-      })
-      
-      if (!existingUser){
-        throw new BadRequestException({
-          statusCode: 400,
-          message: 'Invalid email or password',
-          data: []
-        })
-      }
+  async login(body: { email: string; password: string }) {
+    // 1. Fetch user by email only
+    const user = await this.prisma.users.findFirst({
+      where: { email: body.email },
+    });
 
-      return {
-        statusCode: 200,
-        message: 'log in success',
-        data: existingUser,
-      };
-    } catch (error) {
-      throw error
+    // 2. If user not found → invalid credentials
+    if (!user) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'Invalid email or password',
+        data: [],
+      });
     }
+
+    // 3. Make sure we actually have a hash to compare against
+    if (!user.password) {
+    }
+
+    console.log(user.password)
+    console.log(body.password)
+    // 4. Compare the provided password against the stored hash
+    const passwordMatches = await bcrypt.compare(body.password, user.password);
+
+    if (!passwordMatches) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'Invalid email or password',
+        data: [],
+      });
+    }
+
+    // 5. (Optional) Strip the hash out before returning
+    const { password, ...safeUser } = user;
+
+    return {
+      statusCode: 200,
+      message: 'Log in success',
+      data: safeUser,
+    };
   }
 
   async getUserById(user_id:number){
